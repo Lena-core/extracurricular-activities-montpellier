@@ -5,20 +5,159 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Внеклассные занятия для детей в Монпелье 2025-2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Removed Chart.js CDN as infographics are no longer needed. -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Warm Neutral with Teal Accent -->
-    <!-- Application Structure Plan: A single-page dashboard design is used for immediate access to all information and controls. The structure includes: 1) A prominent top filter bar (by type, location, age, cost) for intuitive data exploration. The search by name functionality has been removed. 2) A responsive card grid for displaying detailed results. This task-oriented approach, where filtering is the primary interaction, is more user-friendly for parents trying to find specific activities than a static table or linear report structure. The goal is to empower users to quickly narrow down the vast number of options to a manageable, relevant list. -->
-    <!-- Visualization & Content Choices:
-        - Report Info: Full list of activities. Goal: Organize/Filter. Method: Interactive card grid. Interaction: Filtering controls update the grid. Justification: Cards are more readable and mobile-friendly than a wide table. Library: HTML/CSS/Tailwind + Vanilla JS.
-        - Report Info: All other details (address, registration, etc.). Goal: Inform (on demand). Method: Expandable section within each card. Interaction: Click to show/hide. Justification: Keeps the initial view clean and prevents information overload, allowing users to drill down on specific items of interest. Library: Vanilla JS. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- Firebase SDK - Firestore and Auth -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, onSnapshot, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Firebase variables for easy access in the main script
+        window.firebaseApp = null;
+        window.db = null;
+        window.auth = null;
+        window.currentUserId = null;
+
+        // Ensure Firebase is initialized and user is authenticated before logging visits
+        document.addEventListener('DOMContentLoaded', async () => {
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+            if (Object.keys(firebaseConfig).length === 0) {
+                console.error("Firebase config is missing. Visit tracking will not work.");
+                return;
+            }
+
+            try {
+                window.firebaseApp = initializeApp(firebaseConfig);
+                window.db = getFirestore(window.firebaseApp);
+                window.auth = getAuth(window.firebaseApp);
+
+                // Sign in the user, preferring custom token if available
+                if (initialAuthToken) {
+                    await signInWithCustomToken(window.auth, initialAuthToken);
+                    console.log("Signed in with custom token.");
+                } else {
+                    await signInAnonymously(window.auth);
+                    console.log("Signed in anonymously.");
+                }
+
+                // Listen for auth state changes and update userId
+                onAuthStateChanged(window.auth, (user) => {
+                    if (user) {
+                        window.currentUserId = user.uid;
+                        console.log("Current user ID:", window.currentUserId);
+                        document.getElementById('user-id-display').textContent = `Ваш ID пользователя: ${window.currentUserId}`;
+
+                        // Log visit and set up listener only once after auth is ready
+                        if (!window.visitLogged) {
+                            logPageVisit();
+                            setupVisitListener();
+                            window.visitLogged = true; // Prevent multiple logs/listeners
+                        }
+                    } else {
+                        window.currentUserId = null;
+                        document.getElementById('user-id-display').textContent = 'Ваш ID пользователя: не авторизован';
+                        console.log("User not authenticated.");
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error initializing Firebase or authenticating:", error);
+                document.getElementById('user-id-display').textContent = `Ошибка авторизации: ${error.message}`;
+            }
+        });
+
+        async function logPageVisit() {
+            if (!window.db || !window.currentUserId) {
+                console.warn("Firebase not initialized or user not authenticated for visit logging.");
+                return;
+            }
+            try {
+                const visitsCollectionRef = collection(window.db, `artifacts/${__app_id}/users/${window.currentUserId}/visits`);
+                await addDoc(visitsCollectionRef, {
+                    timestamp: Timestamp.now(), // Use Firestore server timestamp
+                    pageUrl: window.location.href,
+                    userAgent: navigator.userAgent
+                });
+                console.log("Page visit logged successfully.");
+            } catch (error) {
+                console.error("Error logging page visit:", error);
+            }
+        }
+
+        function setupVisitListener() {
+            if (!window.db || !window.currentUserId) {
+                console.warn("Firebase not initialized or user not authenticated for visit listener.");
+                return;
+            }
+            try {
+                const visitsCollectionRef = collection(window.db, `artifacts/${__app_id}/users/${window.currentUserId}/visits`);
+                // Firestore queries do not support orderBy on multiple fields without specific indexes.
+                // Fetch all and sort client-side.
+                const q = query(visitsCollectionRef);
+
+                onSnapshot(q, (snapshot) => {
+                    const visits = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        visits.push({ id: doc.id, ...data });
+                    });
+
+                    // Sort visits by timestamp client-side in descending order
+                    visits.sort((a, b) => {
+                        const timeA = a.timestamp ? a.timestamp.toDate().getTime() : 0;
+                        const timeB = b.timestamp ? b.timestamp.toDate().getTime() : 0;
+                        return timeB - timeA; // Newest first
+                    });
+
+                    renderVisits(visits);
+                }, (error) => {
+                    console.error("Error fetching visits:", error);
+                    document.getElementById('visit-list').innerHTML = `<li class="text-red-500">Ошибка загрузки посещений: ${error.message}</li>`;
+                });
+            } catch (error) {
+                console.error("Error setting up visit listener:", error);
+            }
+        }
+
+        function renderVisits(visits) {
+            const visitList = document.getElementById('visit-list');
+            if (!visitList) return;
+
+            visitList.innerHTML = '';
+            if (visits.length === 0) {
+                visitList.innerHTML = '<li class="text-slate-500 italic">Пока нет записей о посещениях.</li>';
+                return;
+            }
+
+            visits.forEach(visit => {
+                const li = document.createElement('li');
+                li.className = 'bg-slate-50 p-3 rounded-lg shadow-sm mb-2 text-sm text-slate-700';
+                const date = visit.timestamp ? visit.timestamp.toDate() : new Date();
+                const formattedDate = date.toLocaleString('ru-RU', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                li.innerHTML = `
+                    <p><strong>Дата и время:</strong> ${formattedDate}</p>
+                    <p class="truncate"><strong>Страница:</strong> <a href="${visit.pageUrl}" target="_blank" class="text-teal-600 hover:underline">${visit.pageUrl}</a></p>
+                    ${visit.userAgent ? `<p class="text-xs text-slate-500">Браузер: ${visit.userAgent}</p>` : ''}
+                `;
+                visitList.appendChild(li);
+            });
+        }
+    </script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc; /* slate-50 */
         }
-        /* Removed chart-container styling as charts are no longer present. */
         .details-content {
             max-height: 0;
             overflow: hidden;
@@ -59,13 +198,7 @@
     <main class="container mx-auto p-4 md:p-8">
         
         <section id="filters" class="bg-white p-4 md:p-6 rounded-xl shadow-lg mb-8 sticky top-0 z-10">
-            <!-- Changed grid columns to 3 as search input is removed -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Removed search input field -->
-                <!-- <div>
-                    <label for="search-input" class="block text-sm font-medium text-slate-700 mb-1">Поиск по названию</label>
-                    <input type="text" id="search-input" placeholder="Например, Mad Monkey" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
-                </div> -->
                 <div>
                     <label for="activity-type-filter" class="block text-sm font-medium text-slate-700 mb-1">Вид активности</label>
                     <select id="activity-type-filter" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
@@ -88,7 +221,13 @@
             </div>
         </section>
         
-        <!-- Removed the entire #stats section which contained the infographics (charts). -->
+        <section id="page-visits-section" class="bg-white p-4 md:p-6 rounded-xl shadow-lg mb-8">
+            <h2 class="text-2xl font-bold mb-4">Мои посещения страницы</h2>
+            <p id="user-id-display" class="text-sm text-slate-600 mb-4">Ваш ID пользователя: Загрузка...</p>
+            <ul id="visit-list" class="space-y-2">
+                <li class="text-slate-500 italic">Загрузка истории посещений...</li>
+            </ul>
+        </section>
 
         <section id="results">
             <div class="flex justify-between items-center mb-4">
@@ -112,11 +251,12 @@
     </footer>
 
     <script>
+        // Data for extracurricular activities (remains the same as before)
         const activitiesData = [
             {
                 name: "Монпелье (Service Prest'O)",
                 type: "Общий досуг (ALSH/ALP)",
-                categories: ["Общий досуг (ALSH/ALP)", "Искусство", "Спорт", "Мультимедиа"],
+                categories: ["Общий досуг (ALSH/ALP)", "Искусство и культура", "Спорт", "Мультимедиа"],
                 location: "Монпелье",
                 description: "Внешкольные услуги (поддержка, занятия после уроков), столовая, центры досуга (ALSH) с ручными, художественными, спортивными, мультимедийными занятиями.",
                 age_text: "3-11 лет (для ALSH)",
@@ -127,13 +267,13 @@
                 registration: "С 16 июня 2025, 13:00",
                 conditions: "Обязательное обновление семейного досье. Требуются: заявление, данные о доверенных лицах, страховка, мед. карта.",
                 address: "1 place Georges Frêche, 34267 Montpellier cedex 2",
-                url: "https://www.montpellier.fr/vie-quotidnevna/vivre-ici/j-ai-un-enfant-entre-3-et-11-ans/j-inscris-mon-enfant-a-l-accueil-de-loisirs",
+                url: "https://www.montpellier.fr/vie-quotidnevna/vivre-ici/j-ai-un-enfant-entre-3-и-11-ans/j-inscris-mon-enfant-a-l-accueil-de-loisirs",
                 schedule: "Утренний/вечерний уход, занятия после уроков, столовая (точные часы уточнять на портале)."
             },
             {
                 name: "Сен-Жан-де-Ведас (ALSH)",
                 type: "Общий досуг (ALSH/ALP)",
-                categories: ["Общий досуг (ALSH/ALP)", "Искусство", "Спорт"],
+                categories: ["Общий досуг (ALSH/ALP)", "Искусство и культура", "Спорт"],
                 location: "Сен-Жан-де-Ведас",
                 description: "Комплексные программы досуга: искусство, физические занятия, самоуправляемые сессии, выездные экскурсии, весенние лагеря.",
                 age_text: "3-12 лет",
@@ -150,7 +290,7 @@
             {
                 name: "Байарг (ALP & ALSH)",
                 type: "Общий досуг (ALSH/ALP)",
-                categories: ["Общий досуг (ALSH/ALP)", "Спорт", "Искусство", "Кулинария", "Мультимедиа"],
+                categories: ["Общий досуг (ALSH/ALP)", "Спорт", "Искусство и культура", "Кулинария", "Мультимедиа"],
                 location: "Байарг",
                 description: "ALP (пришкольный уход), ALSH (каникулы): игры, творческие/кулинарные мастер-классы, садоводство, мультимедиа, культурные выезды, тематические дни, региональные/международные поездки. Также FISE Academy: BMX, самокат, беговел.",
                 age_text: "3+ лет",
@@ -201,7 +341,7 @@
             {
                 name: "Пероль (ALSH & ALP)",
                 type: "Общий досуг (ALSH/ALP)",
-                categories: ["Общий досуг (ALSH/ALP)", "Спорт", "Искусство", "Культура", "Техника"],
+                categories: ["Общий досуг (ALSH/ALP)", "Спорт", "Искусство и культура", "Наука и техника"],
                 location: "Пероль",
                 description: "Физические, художественные, культурные, технологические занятия. Ручное творчество, спорт, выразительное искусство. Тематические дни, выезды (бассейны, катки, походы, культурные места).",
                 age_text: "3-12 лет",
@@ -235,7 +375,7 @@
             {
                 name: "Люнель Агло (включая Люнель-Вьель, ALSH)",
                 type: "Общий досуг (ALSH/ALP)",
-                categories: ["Общий досуг (ALSH/ALP)", "Спорт", "Искусство", "Культура", "Техника", "Игры"],
+                categories: ["Общий досуг (ALSH/ALP)", "Спорт", "Искусство и культура", "Наука и техника", "Игры"],
                 location: "Люнель",
                 description: "Разнообразные мероприятия ALSH: физические, художественные, культурные, технологические. Ручное творчество, спорт, выразительное искусство. Тематические дни, культурные выезды, водные занятия. 'Фестиваль 1.2.3 Familles' (май 2025): игры, спорт, искусство, мастер-классы.",
                 age_text: "3-11 лет",
@@ -286,7 +426,7 @@
              {
                 name: "Монпелье (Montpellier Sports)",
                 type: "Спорт",
-                categories: ["Спорт", "Искусство", "Кулинария", "Игры", "Театр", "Танцы", "Здоровье"],
+                categories: ["Спорт", "Искусство и культура", "Кулинария", "Игры", "Театр", "Танцы", "Здоровье"],
                 location: "Монпелье",
                 description: "Различные спортивные секции во время школьных каникул. Примеры на 2025 год: мультиспортивные мероприятия, творческие мастер-классы, стрельба из лука, теннис, кулинарные мастер-классы, квесты, театр, хип-хоп, VTT, футбол, регби, йога.",
                 age_text: "6-14 лет (для многих спортивных секций). Различные возрастные группы для разных мероприятий.",
@@ -388,7 +528,7 @@
             {
                 name: "Кастельно-ле-Лез (MJC Castelnau-le-Lez)",
                 type: "Разное",
-                categories: ["Разное", "Искусство", "Спорт", "Музыка", "Игры", "Языки", "Здоровье", "Наука"],
+                categories: ["Разное", "Искусство и культура", "Спорт", "Музыка", "Игры", "Языки", "Здоровье", "Наука и техника"],
                 location: "Кастельно-ле-Лез",
                 description: "Более 100 видов деятельности: изобразительное искусство, боевые искусства, благополучие, танцы, музыкальная школа, тренажерный зал/фитнес, логические игры, изобразительное искусство, лингвистика, активный отдых, науки, командные виды спорта. (Новинки 2024-2025: Современный танец, Восстановительная йога, Музыкальный театр, Электрогитара, Письменный мастер-класс, Скандинавская ходьба)",
                 age_text: "Все возрасты",
@@ -422,7 +562,7 @@
             {
                 name: "Лаверюн (Foyer Rural)",
                 type: "Разное",
-                categories: ["Разное", "Спорт", "Игры", "Театр", "Искусство", "Музыка"],
+                categories: ["Разное", "Спорт", "Игры", "Театр", "Искусство и культура", "Музыка"],
                 location: "Лаверюн",
                 description: "Гимнастика, шахматы, дзюдо, настольный теннис, бадминтон, театр, рисование, музыка.",
                 age_text: "Все возрасты. Театр для детей: 7-11 лет.",
@@ -439,7 +579,7 @@
             {
                 name: "Лаверюн (Maison des Jeunes)",
                 type: "Разное",
-                categories: ["Разное", "Спорт", "Культура", "Активный отдых"],
+                categories: ["Разное", "Спорт", "Искусство и культура", "Активный отдых"],
                 location: "Лаверюн",
                 description: "Разнообразные мероприятия (спортивные, культурные, выезды, лагеря), Мини-футбол, Межкоммунальные мероприятия.",
                 age_text: "От CM2 до лицея (10-16 лет).",
@@ -473,7 +613,7 @@
             {
                 name: "Жаку (MJC Boby Lapointe)",
                 type: "Разное",
-                categories: ["Разное", "Спорт", "Искусство", "Культура", "Музыка", "Театр", "Танцы", "Здоровье"],
+                categories: ["Разное", "Спорт", "Искусство и культура", "Музыка", "Театр", "Танцы", "Здоровье"],
                 location: "Жаку",
                 description: "Более 50 спортивных, художественных и культурных мероприятий. Лагеря во время школьных каникул (кроме Рождества): специализированные (театр, танцы, пилатес) и мультиактивные (рисование, творческие мастер-классы). Мероприятия: музыкальные, театральные, K-pop шоу, VTT, футбол, регби, йога.",
                 age_text: "Мультиактивные лагеря: 6-13 лет. Специализированные лагеря: дети, подростки, взрослые. Театральные шоу: дети, подростки. VTT: все возрасты, несовершеннолетние со взрослыми. Регби: 6-14 лет. Йога: взрослые и дети от 5 лет.",
@@ -524,7 +664,7 @@
             {
                 name: "Фабрег (ALSH 2.5-11 лет & ALP)",
                 type: "Общий досуг (ALSH/ALP)",
-                categories: ["Общий досуг (ALSH/ALP)", "Спорт", "Искусство", "Культура", "Игры"],
+                categories: ["Общий досуг (ALSH/ALP)", "Спорт", "Искусство и культура", "Игры"],
                 location: "Фабрег",
                 description: "ALSH: не детализированы на 2025-2026. ALP (январь-февраль 2025, тема 'Зимняя магия'): спорт (игры с мячом, вводный гандбол, эстафеты) и ручные занятия (оригами, зимнее дерево, белый медведь). Акцент на игровую, культурную, спортивную и художественную инициацию.",
                 age_text: "ALSH: 2.5-11 лет. ALP: детский сад и начальная школа.",
@@ -575,7 +715,7 @@
             {
                 name: "Bricks 4 Kidz Montpellier",
                 type: "Наука и техника",
-                categories: ["Наука и техника"],
+                categories: ["Наука и техника", "Образование"],
                 location: "Монферрье-сюр-Лез",
                 description: "Мастер-классы LEGO® (Конструирование, Робототехника, Кодирование), Летние лагеря, Дни рождения, Школьные/колледж программы, Центры досуга.",
                 age_text: "3-13 лет.",
@@ -592,7 +732,7 @@
             {
                 name: "Lattes Loisirs et Culture (LLC)",
                 type: "Разное",
-                categories: ["Разное", "Искусство", "Здоровье", "Культура", "Танцы", "Игры", "Музыка", "Спорт"],
+                categories: ["Разное", "Искусство и культура", "Здоровье", "Танцы", "Игры", "Музыка", "Спорт"],
                 location: "Латт",
                 description: "Искусство (творчество, живопись, скульптура), Здоровье (аквааэробика, пилатес, йога, софрология), Культура (письмо, история, театр), Танцы (бачата, классика, модерн-джаз, хип-хоп, рок, сальса), Настольные игры, Музыка (хоры, музыкальная школа), Спорт (акваходьба, походы, велоспорт, самооборона, парусный спорт).",
                 age_text: "Все поколения.",
@@ -609,9 +749,9 @@
             {
                 name: "Centre Socioculturel Gutenberg Grabels",
                 type: "Разное",
-                categories: ["Разное", "Спорт", "Танцы", "Искусство", "Образование", "Здоровье", "Языки", "Игры", "Садоводство"],
+                categories: ["Разное", "Спорт", "Tанцы", "Искусство и культура", "Образование", "Здоровье", "Языки", "Игры", "Садоводство"],
                 location: "Грабель",
-                description: "Спорт (Танцы, Хип-Хоп, Капоэйра, Тхэквондо, Кросс-тренинг, Айкидо), Искусство (Театр, История искусств, Акро-йога), Дошкольное образование (Бэби-гимнастика, массаж, развитие), Языки (Французский), Досуг (настольные игры), Садоводство, Помощь в учебе.",
+                description: "Спорт (Tанцы, Хип-Хоп, Капоэйра, Тхэквондо, Кросс-тренинг, Айкидо), Искусство (Театр, История искусств, Акро-йога), Дошкольное образование (Бэби-гимнастика, массаж, развитие), Языки (Французский), Досуг (настольные игры), Садоводство, Помощь в учебе.",
                 age_text: "Дошкольники (0-6 лет), Дети (от 7 лет для психомоторики), Подростки, Взрослые, Пожилые.",
                 min_age: 0,
                 max_age: 99,
@@ -626,9 +766,9 @@
             {
                 name: "MJC Teyran",
                 type: "Разное",
-                categories: ["Разное", "Спорт", "Игры", "Танцы", "Искусство", "Культура", "Музыка", "Здоровье"],
+                categories: ["Разное", "Спорт", "Игры", "Танцы", "Искусство и культура", "Музыка", "Здоровье"],
                 location: "Тейран",
-                description: "Спорт и игры, Танцы, Искусство и культура, Музыка, Здоровье. (Новинки 2024-2025: Адаптивные танцы для детей, Шитье для родителей/детей, Шахматы, Гимнастика для родителей/детей, Фабрика шоу)",
+                description: "Спорт и игры, Tанцы, Искусство и культура, Музыка, Здоровье. (Новинки 2024-2025: Адаптивные танцы для детей, Шитье для родителей/детей, Шахматы, Гимнастика для родителей/детей, Фабрика шоу)",
                 age_text: "Дети, Взрослые, Люди с ограниченными возможностями.",
                 min_age: null,
                 max_age: null,
@@ -660,7 +800,7 @@
             {
                 name: "Ofildel'art Montferrier-sur-Lez",
                 type: "Театр",
-                categories: ["Театр", "Искусство"],
+                categories: ["Театр", "Искусство и культура"],
                 location: "Монферрье-сюр-Лез",
                 description: "Театр (мастер-классы, декорации), Сказки.",
                 age_text: "Дети. Все аудитории для сказок.",
@@ -693,8 +833,8 @@
             },
             {
                 name: "L'Atelier d'Elodie (Шитье)",
-                type: "Искусство",
-                categories: ["Искусство"],
+                type: "Искусство и культура",
+                categories: ["Искусство и культура"],
                 location: "Монпелье",
                 description: "Курсы шитья.",
                 age_text: "Дети (8-12 лет), Подростки (13-17 лет).",
@@ -813,7 +953,7 @@
             {
                 name: "Swing Cat école danse Montpellier",
                 type: "Танцы",
-                categories: ["Танцы", "Искусство"],
+                categories: ["Танцы", "Искусство и культура"],
                 location: "Монпелье / Латт",
                 description: "Танцы (Линди-хоп, Рок, Сальса, Бачата, Бальбоа, Вест-Кост, Соло-свинг, Чечетка, Хип-хоп, Стрит-джаз, Модерн-джаз, Хилс, Введение в танец, Развивающий танец, Дэнсхолл, Дэнсхолл Гьял, Кабаре, Таитянский танец).",
                 age_text: "Дети, Подростки, Взрослые. Развивающий танец.",
@@ -829,8 +969,8 @@
             },
             {
                 name: "La Petite Académie (Рисование, Живопись, Скульптура)",
-                type: "Искусство",
-                categories: ["Искусство"],
+                type: "Искусство и культура",
+                categories: ["Искусство и культура"],
                 location: "Не указано (Клермон-Ферран, Реймс и т.д. - уточнять для Монпелье)",
                 description: "Рисование, Живопись, Скульптура, Комиксы/Манга, Мульти-техники.",
                 age_text: "Дети (4-12 лет), Подростки (от 13 лет), Взрослые.",
@@ -930,6 +1070,23 @@
                 schedule: "Школа скалолазания по расписанию, свободное посещение в часы работы."
             },
             {
+                name: "La Nef",
+                type: "Не указано",
+                categories: ["Не указано"],
+                location: "Не указано",
+                description: "Не найдено информации о внеклассных занятиях для детей в Монпелье.",
+                age_text: "Не указано.",
+                min_age: null,
+                max_age: null,
+                cost_text: "Не указано.",
+                cost_annual: null,
+                registration: "Не указано.",
+                conditions: "Не указано.",
+                address: "Не указано.",
+                url: null,
+                schedule: "Не указано."
+            },
+            {
                 name: "Ecole Montessori bilingue Montpellier",
                 type: "Образование",
                 categories: ["Образование", "Языки"],
@@ -966,7 +1123,7 @@
             {
                 name: "Chore-Danse Montpellier",
                 type: "Танцы",
-                categories: ["Танцы", "Искусство"],
+                categories: ["Танцы", "Искусство и культура"],
                 location: "Монпелье",
                 description: "Танцы (модерн, классический, баре на полу).",
                 age_text: "Дети, подростки, взрослые. Уровни: 'Eveil' (4-5 лет), 'Initiation' (6-7 лет), 'Préparatoire' (8-10 лет), 'Elémentaire' (11-13 лет), 'Ado' (11-15 лет).",
@@ -983,7 +1140,7 @@
             {
                 name: "Choreart Montpellier",
                 type: "Танцы",
-                categories: ["Танцы", "Искусство"],
+                categories: ["Танцы", "Искусство и культура"],
                 location: "Монпелье",
                 description: "Танцы (различные форматы абонементов: Solo, Duo, Maxi).",
                 age_text: "8-17 лет, взрослые.",
@@ -1017,7 +1174,7 @@
             {
                 name: "Association MIR Franco-Russe",
                 type: "Языки",
-                categories: ["Языки", "Культура"],
+                categories: ["Языки", "Искусство и культура"],
                 location: "Монпелье",
                 description: "Курсы русского языка (для детей-билингвов, детей 4-6 лет, детей 3-5 лет), разговорные клубы для взрослых. Культурные проекты, языковые обмены, покупка книг, путешествия.",
                 age_text: "Дети-билингвы (6-9 лет), дети (4-6 лет), дети (3-5 лет).",
@@ -1034,7 +1191,7 @@
             {
                 name: "Les enfants russes de Montpellier",
                 type: "Языки",
-                categories: ["Языки", "Культура", "Театр", "Музыка", "Искусство"],
+                categories: ["Языки", "Искусство и культура", "Театр", "Музыка"],
                 location: "Монпелье",
                 description: "Школа русского языка, театр, музыка, развитие речи, рукоделие, русская литература и страноведение. Организация 'Русских каникул' (лагерей).",
                 age_text: "Дети.",
@@ -1051,7 +1208,7 @@
             {
                 name: "Консерватория Монпелье (Conservatoire à Rayonnement Régional)",
                 type: "Музыка",
-                categories: ["Музыка", "Танец", "Театр", "Искусство"],
+                categories: ["Музыка", "Танцы", "Театр", "Искусство и культура"],
                 location: "Монпелье",
                 description: "Музыка (ударные, струнные, фортепиано, духовые, вокал, джаз, старинная музыка, традиционная, электроакустическая), танец, театр. Музыкальное развитие, инструментальные занятия, ансамбли, хор.",
                 age_text: "Дети, подростки, взрослые. Музыкальное развитие: от 5 лет.",
@@ -1067,10 +1224,7 @@
             }
         ];
 
-
         document.addEventListener('DOMContentLoaded', () => {
-            // Removed searchInput variable
-            // const searchInput = document.getElementById('search-input');
             const activityTypeFilter = document.getElementById('activity-type-filter');
             const locationFilter = document.getElementById('location-filter');
             const ageFilter = document.getElementById('age-filter');
@@ -1080,22 +1234,23 @@
             const loader = document.getElementById('loader');
             const resetBtn = document.getElementById('reset-filters');
             
-            // Removed Chart.js related canvas elements and chart variables.
-            // const activityTypeChartCanvas = document.getElementById('activityTypeChart');
-            // const costChartCanvas = document.getElementById('costChart');
-            // let activityTypeChart, costChart;
-            
             function populateFilters() {
-                const activityTypes = [...new Set(activitiesData.map(item => item.type))].sort();
-                const locations = [...new Set(activitiesData.map(item => item.location))].sort();
+                const allCategories = new Set();
+                activitiesData.forEach(item => {
+                    item.categories.forEach(category => allCategories.add(category));
+                });
+                const sortedCategories = Array.from(allCategories).sort();
 
-                activityTypes.forEach(type => {
+                activityTypeFilter.innerHTML = '<option value="all">Все виды</option>'; // Reset options
+                sortedCategories.forEach(type => {
                     const option = document.createElement('option');
                     option.value = type;
                     option.textContent = type;
                     activityTypeFilter.appendChild(option);
                 });
 
+                const locations = [...new Set(activitiesData.map(item => item.location))].sort();
+                locationFilter.innerHTML = '<option value="all">Все локации</option>'; // Reset options
                 locations.forEach(location => {
                     const option = document.createElement('option');
                     option.value = location;
@@ -1113,7 +1268,6 @@
                 }
                 
                 data.forEach(item => {
-                    // Generate tags HTML
                     const tagsHtml = item.categories.map(tag => `
                         <span class="text-xs font-semibold uppercase tracking-wider text-teal-600 bg-teal-100 px-2 py-1 rounded-full whitespace-nowrap">
                             ${tag}
@@ -1134,9 +1288,9 @@
                             <p class="text-slate-600 mb-1"><strong>📍 Место:</strong> ${item.location}</p>
                             <p class="text-slate-600 mb-1"><strong>👶 Возраст:</strong> ${item.age_text}</p>
                             <p class="text-slate-600 mb-1"><strong>💰 Стоимость:</strong> ${item.cost_text || 'Не указана'}</p>
+                            <p class="text-slate-600 mb-4"><strong>⏰ Расписание:</strong> ${item.schedule || 'Не указано'}</p>
+                            <button class="details-toggle w-full text-left text-teal-700 font-semibold py-2">Подробнее ▼</button>
                             <div class="details-content mt-4 border-t pt-4 text-slate-700">
-                                <p class="text-slate-600 mb-4"><strong>⏰ Расписание:</strong> ${item.schedule || 'Не указано'}</p>
-                                <button class="details-toggle w-full text-left text-teal-700 font-semibold py-2">Подробнее ▼</button>
                                 <p class="mb-2"><strong>🗓️ Регистрация:</strong> ${item.registration}</p>
                                 <p class="mb-2"><strong>📝 Условия:</strong> ${item.conditions}</p>
                                 <p class="mb-4"><strong>🏠 Адрес:</strong> ${item.address}</p>
@@ -1149,104 +1303,27 @@
             }
 
             function filterAndRender() {
-                // Removed searchTerm variable and its usage
-                // const searchTerm = searchInput.value.toLowerCase();
                 const selectedType = activityTypeFilter.value;
                 const selectedLocation = locationFilter.value;
                 const selectedAge = ageFilter.value ? parseInt(ageFilter.value, 10) : null;
                 
                 const filteredData = activitiesData.filter(item => {
-                    // Removed nameMatch from filter condition
-                    // const nameMatch = item.name.toLowerCase().includes(searchTerm);
-                    // Filter logic still uses 'type' for the dropdown, as it's the main filter.
-                    const typeMatch = selectedType === 'all' || item.type === selectedType;
+                    const typeMatch = selectedType === 'all' || (item.categories && item.categories.includes(selectedType));
                     const locationMatch = selectedLocation === 'all' || item.location === selectedLocation;
                     const ageMatch = !selectedAge || (selectedAge >= item.min_age && selectedAge <= item.max_age);
                     
-                    return typeMatch && locationMatch && ageMatch; // Only filter by type, location, and age
+                    return typeMatch && locationMatch && ageMatch;
                 });
                 
                 resultsCount.textContent = `${filteredData.length} найдено`;
                 renderCards(filteredData);
-                // Removed chart update calls as charts are no longer present.
-                // updateCharts(filteredData);
             }
 
-            // Removed setupCharts function as charts are no longer present.
-            // function setupCharts() {
-            //     const initialData = activitiesData;
-            //     
-            //     const typeCtx = activityTypeChartCanvas.getContext('2d');
-            //     activityTypeChart = new Chart(typeCtx, {
-            //         type: 'doughnut',
-            //         data: { labels: [], datasets: [{ data: [], backgroundColor: ['#14b8a6', '#0d9488', '#0f766e', '#047857', '#065f46', '#064e3b', '#a7f3d0', '#6ee7b7', '#34d399'] }] },
-            //         options: {
-            //             responsive: true,
-            //             maintainAspectRatio: false,
-            //             plugins: {
-            //                 legend: { position: 'bottom', labels: { boxWidth: 15, padding: 15 } }
-            //             }
-            //         }
-            //     });
-            //
-            //     const costCtx = costChartCanvas.getContext('2d');
-            //     costChart = new Chart(costCtx, {
-            //         type: 'bar',
-            //         data: { labels: [], datasets: [{ label: 'Средняя годовая стоимость (€)', data: [], backgroundColor: '#14b8a6' }] },
-            //         options: {
-            //             indexAxis: 'y',
-            //             responsive: true,
-            //             maintainAspectRatio: false,
-            //             plugins: {
-            //                 legend: { display: false }
-            //             },
-            //             scales: {
-            //                 x: { beginAtZero: true }
-            //             }
-            //         }
-            //     });
-            //     
-            //     updateCharts(initialData);
-            // }
-            
-            // Removed updateCharts function as charts are no longer present.
-            // function updateCharts(data) {
-            //     const typeCounts = data.reduce((acc, item) => {
-            //         acc[item.type] = (acc[item.type] || 0) + 1;
-            //         return acc;
-            //     }, {});
-            //     
-            //     activityTypeChart.data.labels = Object.keys(typeCounts);
-            //     activityTypeChart.data.datasets[0].data = Object.values(typeCounts);
-            //     activityTypeChart.update();
-            //
-            //     const costData = data.filter(item => item.cost_annual !== null && item.cost_annual > 0);
-            //     const costByType = costData.reduce((acc, item) => {
-            //         if (!acc[item.type]) {
-            //             acc[item.type] = { total: 0, count: 0 };
-            //         }
-            //         acc[item.type].total += item.cost_annual;
-            //         acc[item.type].count += 1;
-            //         return acc;
-            //     }, {});
-            //
-            //     const avgCostLabels = Object.keys(costByType);
-            //     const avgCostValues = avgCostLabels.map(type => Math.round(costByType[type].total / costByType[type].count));
-            //
-            //     costChart.data.labels = avgCostLabels;
-            //     costChart.data.datasets[0].data = avgCostValues;
-            //     costChart.update();
-            // }
-
-            // Removed event listener for searchInput
-            // searchInput.addEventListener('input', filterAndRender);
             activityTypeFilter.addEventListener('change', filterAndRender);
             locationFilter.addEventListener('change', filterAndRender);
             ageFilter.addEventListener('input', filterAndRender);
 
             resetBtn.addEventListener('click', () => {
-                // Removed searchInput value reset
-                // searchInput.value = '';
                 activityTypeFilter.value = 'all';
                 locationFilter.value = 'all';
                 ageFilter.value = '';
@@ -1264,9 +1341,9 @@
             loader.style.display = 'block';
             resultsGrid.style.display = 'none';
 
+            // Initial rendering of cards and filters
             setTimeout(() => {
                 populateFilters();
-                // Removed setupCharts call.
                 filterAndRender();
                 loader.style.display = 'none';
                 resultsGrid.style.display = 'grid';
