@@ -8,7 +8,7 @@
     <!-- Removed Chart.js CDN as infographics are no longer needed. -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Warm Neutral with Teal Accent -->
-    <!-- Application Structure Plan: A single-page dashboard design is used for immediate access to all information and controls. The structure includes: 1) A prominent top filter bar (by type, location, age, cost, search) for intuitive data exploration. 2) A responsive card grid for displaying detailed results. This task-oriented approach, where filtering is the primary interaction, is more user-friendly for parents trying to find specific activities than a static table or linear report structure. The goal is to empower users to quickly narrow down the vast number of options to a manageable, relevant list. -->
+    <!-- Application Structure Plan: A single-page dashboard design is used for immediate access to all information and controls. The structure includes: 1) A prominent top filter bar (by type, location, age, cost) for intuitive data exploration. The search by name functionality has been removed. 2) A responsive card grid for displaying detailed results. This task-oriented approach, where filtering is the primary interaction, is more user-friendly for parents trying to find specific activities than a static table or linear report structure. The goal is to empower users to quickly narrow down the vast number of options to a manageable, relevant list. -->
     <!-- Visualization & Content Choices:
         - Report Info: Full list of activities. Goal: Organize/Filter. Method: Interactive card grid. Interaction: Filtering controls update the grid. Justification: Cards are more readable and mobile-friendly than a wide table. Library: HTML/CSS/Tailwind + Vanilla JS.
         - Report Info: All other details (address, registration, etc.). Goal: Inform (on demand). Method: Expandable section within each card. Interaction: Click to show/hide. Justification: Keeps the initial view clean and prevents information overload, allowing users to drill down on specific items of interest. Library: Vanilla JS. -->
@@ -49,17 +49,23 @@
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Гид по внеклассным занятиям</h1>
             <p class="text-lg text-slate-600 mt-2">Монпелье и окрестности | 2025-2026 учебный год</p>
+            <!-- Disclaimer added below -->
+            <p class="text-sm text-slate-500 mt-1 italic">
+                Информация получена из открытых источников и носит ознакомительный характер. Пожалуйста, всегда проверяйте актуальные данные у организаций.
+            </p>
         </div>
     </header>
 
     <main class="container mx-auto p-4 md:p-8">
         
         <section id="filters" class="bg-white p-4 md:p-6 rounded-xl shadow-lg mb-8 sticky top-0 z-10">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div>
+            <!-- Changed grid columns to 3 as search input is removed -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Removed search input field -->
+                <!-- <div>
                     <label for="search-input" class="block text-sm font-medium text-slate-700 mb-1">Поиск по названию</label>
                     <input type="text" id="search-input" placeholder="Например, Mad Monkey" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
-                </div>
+                </div> -->
                 <div>
                     <label for="activity-type-filter" class="block text-sm font-medium text-slate-700 mb-1">Вид активности</label>
                     <select id="activity-type-filter" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
@@ -110,7 +116,9 @@
             {
                 name: "Монпелье (Service Prest'O)",
                 type: "Общий досуг (ALSH/ALP)",
+                categories: ["Общий досуг (ALSH/ALP)", "Искусство", "Спорт", "Мультимедиа"],
                 location: "Монпелье",
+                description: "Внешкольные услуги (поддержка, занятия после уроков), столовая, центры досуга (ALSH) с ручными, художественными, спортивными, мультимедийными занятиями.",
                 age_text: "3-11 лет (для ALSH)",
                 min_age: 3,
                 max_age: 11,
@@ -119,12 +127,15 @@
                 registration: "С 16 июня 2025, 13:00",
                 conditions: "Обязательное обновление семейного досье. Требуются: заявление, данные о доверенных лицах, страховка, мед. карта.",
                 address: "1 place Georges Frêche, 34267 Montpellier cedex 2",
-                url: "https://www.montpellier.fr/vie-quotidienne/vivre-ici/j-ai-un-enfant-entre-3-et-11-ans/j-inscris-mon-enfant-a-l-accueil-de-loisirs"
+                url: "https://www.montpellier.fr/vie-quotidnevna/vivre-ici/j-ai-un-enfant-entre-3-et-11-ans/j-inscris-mon-enfant-a-l-accueil-de-loisirs",
+                schedule: "Утренний/вечерний уход, занятия после уроков, столовая (точные часы уточнять на портале)."
             },
             {
                 name: "Сен-Жан-де-Ведас (ALSH)",
                 type: "Общий досуг (ALSH/ALP)",
+                categories: ["Общий досуг (ALSH/ALP)", "Искусство", "Спорт"],
                 location: "Сен-Жан-де-Ведас",
+                description: "Комплексные программы досуга: искусство, физические занятия, самоуправляемые сессии, выездные экскурсии, весенние лагеря.",
                 age_text: "3-12 лет",
                 min_age: 3,
                 max_age: 12,
@@ -133,12 +144,15 @@
                 registration: "В течение года. Бронирование на каникулы за 5-6 недель.",
                 conditions: "Требуются финансовые документы, мед. карта, подтверждение права на помощь.",
                 address: "Accueil de loisirs ''Les Garrigues'', Chemin de la Combe, 34430 Saint-Jean-de-Védas",
-                url: "https://saintjeandevedas.fr/sjdv/enfance-jeunesse/pour-les-3-12-ans-2021"
+                url: "https://saintjeandevedas.fr/sjdv/enfance-jeunesse/pour-les-3-12-ans-2021",
+                schedule: "Программы досуга во время школьных каникул. Точное расписание уточнять."
             },
             {
                 name: "Байарг (ALP & ALSH)",
                 type: "Общий досуг (ALSH/ALP)",
+                categories: ["Общий досуг (ALSH/ALP)", "Спорт", "Искусство", "Кулинария", "Мультимедиа"],
                 location: "Байарг",
+                description: "ALP (пришкольный уход), ALSH (каникулы): игры, творческие/кулинарные мастер-классы, садоводство, мультимедиа, культурные выезды, тематические дни, региональные/международные поездки. Также FISE Academy: BMX, самокат, беговел.",
                 age_text: "3+ лет",
                 min_age: 3,
                 max_age: 18,
@@ -147,12 +161,15 @@
                 registration: "Открыта",
                 conditions: "Требуется подтверждение места жительства, страховка, прививки. Ограниченное количество мест.",
                 address: "Maison de l'Enfance André Vitou-Valto, 10 rue de la Chicane, 34670 Baillargues",
-                url: "https://www.baillargues.fr/la-jeunesse/"
+                url: "https://www.baillargues.fr/la-jeunesse/",
+                schedule: "ALP утро/вечер: до 7:00/16:15 в день посещения. ALP среда: за 7 дней до 9:00. ALSH: еженедельное бронирование. Точное расписание уточнять."
             },
             {
                 name: "Клапье (ALSH & ALP)",
                 type: "Общий досуг (ALSH/ALP)",
+                categories: ["Общий досуг (ALSH/ALP)", "Спорт", "Активный отдых"],
                 location: "Клапье",
+                description: "Летние ALSH (море, река, лес, лазертаг, веревочный парк, плавание, игры). ALP (Mélodie: 3-6 лет, Harmonie: 6-12 лет) с тематическими программами. Молодежный клуб (10-18 лет) с выездами.",
                 age_text: "3-17 лет",
                 min_age: 3,
                 max_age: 17,
@@ -160,27 +177,33 @@
                 cost_annual: null,
                 registration: "Онлайн через семейный портал. Сроки меняются.",
                 conditions: "Требуется идентификатор для семейного портала.",
-                address: "Accueil de loisirs 'Mélodie', rue des litanies, Clapiers",
-                url: "https://www.ville-clapiers.fr/Enfance-Jeunesse-(ALP-ALSH-MENUS)/105/"
+                address: "Accueil de loisirs 'Mélodie', rue des litanies; Accueil de loisirs 'Harmonie' rue du bosc; Local Jeunes, 1, rue du Paraguay",
+                url: "https://www.ville-clapiers.fr/Enfance-Jeunesse-(ALP-ALSH-MENUS)/105/",
+                schedule: "Расписание ALP/ALSH меняется в зависимости от периода. Точные часы уточнять на портале."
             },
             {
                 name: "Монферрье-сюр-Лез (ALSH L'Olivier)",
                 type: "Общий досуг (ALSH/ALP)",
+                categories: ["Общий досуг (ALSH/ALP)"],
                 location: "Монферрье-сюр-Лез",
+                description: "Общие досуговые мероприятия.",
                 age_text: "3-11 лет",
                 min_age: 3,
                 max_age: 11,
-                cost_text: "Тарифы в мэрии",
+                cost_text: "Тарифы доступны в мэрии",
                 cost_annual: null,
                 registration: "Вероятно, в январе-феврале 2025",
                 conditions: "Родители предоставляют перекусы.",
                 address: "Accueil de loisirs L'Olivier, 20 chemin de la qualité, Montferrier-sur-Lez",
-                url: "https://ville-montferrier-sur-lez.fr/centre-de-loisirs-2/"
+                url: "https://ville-montferrier-sur-lez.fr/centre-de-loisirs-2/",
+                schedule: "Среды и школьные каникулы. Точное расписание уточнять в мэрии."
             },
             {
                 name: "Пероль (ALSH & ALP)",
                 type: "Общий досуг (ALSH/ALP)",
+                categories: ["Общий досуг (ALSH/ALP)", "Спорт", "Искусство", "Культура", "Техника"],
                 location: "Пероль",
+                description: "Физические, художественные, культурные, технологические занятия. Ручное творчество, спорт, выразительное искусство. Тематические дни, выезды (бассейны, катки, походы, культурные места).",
                 age_text: "3-12 лет",
                 min_age: 3,
                 max_age: 12,
@@ -189,12 +212,15 @@
                 registration: "Вероятно, в конце августа",
                 conditions: "Бронирование и оплата через портал IFAC обязательны.",
                 address: "Rue Font Martin 34470 Perols",
-                url: "https://perols.ifac.asso.fr/"
+                url: "https://perols.ifac.asso.fr/",
+                schedule: "Расписание варьируется в зависимости от программы и каникул. Уточнять на портале IFAC."
             },
             {
                 name: "Вильнёв-ле-Магелон (ALSH & ALP)",
                 type: "Общий досуг (ALSH/ALP)",
+                categories: ["Общий досуг (ALSH/ALP)", "Игры", "Активный отдых"],
                 location: "Вильнёв-ле-Магелон",
+                description: "ALP: утренний, обеденный (с питанием), вечерний уход. Вечерние занятия: гибкие, свободные игры (настольные игры, игры на свежем воздухе). ALSH (среды, школьные каникулы).",
                 age_text: "Детский сад, начальная школа",
                 min_age: 3,
                 max_age: 11,
@@ -203,12 +229,15 @@
                 registration: "Открыта, через Pôle Famille",
                 conditions: "Требуется DUI (единое досье), бронирование за 7 дней.",
                 address: "Pôle Famille, 2 Place des Héros, 34750 Villeneuve-lès-Maguelone",
-                url: "https://www.villeneuvelesmaguelone.fr/mon-quotidien/vie-scolaire/etablissements-et-inscriptions-scolaires/"
+                url: "https://www.villeneuvelesmaguelone.fr/mon-quotidien/vie-scolaire/etablissements-и-inscriptions-scolaires/",
+                schedule: "ALP: утро/полдень/вечер в школьные дни. ALSH: среда и школьные каникулы. Точное расписание уточнять."
             },
             {
-                name: "Люнель Агло (ALSH)",
+                name: "Люнель Агло (включая Люнель-Вьель, ALSH)",
                 type: "Общий досуг (ALSH/ALP)",
+                categories: ["Общий досуг (ALSH/ALP)", "Спорт", "Искусство", "Культура", "Техника", "Игры"],
                 location: "Люнель",
+                description: "Разнообразные мероприятия ALSH: физические, художественные, культурные, технологические. Ручное творчество, спорт, выразительное искусство. Тематические дни, культурные выезды, водные занятия. 'Фестиваль 1.2.3 Familles' (май 2025): игры, спорт, искусство, мастер-классы.",
                 age_text: "3-11 лет",
                 min_age: 3,
                 max_age: 11,
@@ -216,27 +245,33 @@
                 cost_annual: null,
                 registration: "Открыта, требуется посещение для первой регистрации.",
                 conditions: "Обязательна ежегодная регистрация и учетная запись на портале.",
-                address: "Lunel Agglo, 152 chemin des Merles, Lunel",
-                url: "https://www.lunelagglo.fr/vivre-ici/lenfance/accueils-loisirs-lunelagglo/"
+                address: "Lunel Agglo, 152 chemin des Merles, Lunel (для Service Enfance)",
+                url: "https://www.lunelagglo.fr/vivre-ici/lenfance/accueils-loisirs-lunelagglo/",
+                schedule: "Расписание зависит от конкретной программы ALSH и фестивалей. Уточнять на сайте."
             },
             {
                 name: "Монпелье (Le P'tit Club)",
                 type: "Спорт",
+                categories: ["Спорт"],
                 location: "Монпелье",
+                description: "Гимнастика (развитие моторики), мультиспорт, вводная гимнастика, мультиспортивные лагеря, дни рождения (теннис, дзюдо, баскетбол, гимнастика, хоккей, легкая атлетика, футбол, регби).",
                 age_text: "1-12 лет",
                 min_age: 1,
                 max_age: 12,
                 cost_text: "Годовой абонемент: 280€",
                 cost_annual: 280,
                 registration: "Предварительная запись на 2025-2026 открыта.",
-                conditions: "Ежеквартальные или годовые абонементы.",
+                conditions: "Ежеквартальные или годовые абонементы. Еженедельные занятия (10 последовательных недель или до конца июня, исключая школьные каникулы).",
                 address: "Squash Club, 15 rue du Caducée, 34090 Montpellier",
-                url: "https://leptitclub.fr/produit/pre-inscription-aux-cours-hebdomadaires-2025-2026-a-montpellier/"
+                url: "https://leptitclub.fr/produit/pre-inscription-aux-cours-hebdomadaires-2025-2026-a-montpellier/",
+                schedule: "Еженедельные занятия, точное расписание по дням и часам уточнять на сайте."
             },
             {
                 name: "Монпелье (EdenKids Odysseum)",
                 type: "Спорт",
+                categories: ["Спорт", "Языки"],
                 location: "Монпелье",
+                description: "Детская гимнастика (развитие моторики), плавание для младенцев, игровая гимнастика, неконкурентная спортивная гимнастика, уроки плавания, совершенствование плавания, введение в английский язык.",
                 age_text: "От 4 месяцев до 10 лет",
                 min_age: 0,
                 max_age: 10,
@@ -245,251 +280,797 @@
                 registration: "Свяжитесь напрямую",
                 conditions: "Свяжитесь для уточнения наличия мест.",
                 address: "Zone Commerciale Odysseum - 1072 rue Georges Méliès, 34000 MONTPELLIER",
-                url: "https://odysseum.edenkids.fr/"
+                url: "https://odysseum.edenkids.fr/details-inscription+activites+enfant+annee+2024-2025+a+montpellier-1562",
+                schedule: "Точное расписание и график уточнять напрямую с клубом."
             },
              {
                 name: "Монпелье (Montpellier Sports)",
                 type: "Спорт",
+                categories: ["Спорт", "Искусство", "Кулинария", "Игры", "Театр", "Танцы", "Здоровье"],
                 location: "Монпелье",
-                age_text: "6-14 лет",
+                description: "Различные спортивные секции во время школьных каникул. Примеры на 2025 год: мультиспортивные мероприятия, творческие мастер-классы, стрельба из лука, теннис, кулинарные мастер-классы, квесты, театр, хип-хоп, VTT, футбол, регби, йога.",
+                age_text: "6-14 лет (для многих спортивных секций). Различные возрастные группы для разных мероприятий.",
                 min_age: 6,
                 max_age: 14,
                 cost_text: "В основном бесплатно с картой (5€)",
                 cost_annual: 5,
                 registration: "Онлайн с 3 февраля 2025",
-                conditions: "Для жителей Монпелье. Требуется мед. справка, разрешение родителей, страховка.",
+                conditions: "Для жителей Монпелье. Требуется мед. справка, разрешение родителей, страховка. Обязательно полное участие в зарегистрированных секциях. Количество мест ограничено.",
                 address: "Pôle Sports, Immeuble le Belem, 355, rue Vendémiaire, 34000 Montpellier",
-                url: "https://www.montpellier.fr"
+                url: "https://www.montpellier.fr/sites/default/files/2025-02/WEB-GUIDE%20STAGES%20SPORTIFS-15x21-01-2025-NG-V4.pdf",
+                schedule: "Секции проводятся во время школьных каникул. Точное расписание по дням и часам уточнять в гиде."
             },
             {
                 name: "Жювиньяк (Activ' ta ville)",
                 type: "Спорт",
+                categories: ["Спорт", "Языки", "Танцы", "Игры"],
                 location: "Жювиньяк",
+                description: "Мультиспорт, адаптированные физические занятия, баскетбол, мастер-классы по английскому языку, тхэквондо, футбол, сальса, зумба, бачата, кизомба, хип-хоп, модерн-джаз, настольные и стратегические игры.",
                 age_text: "От 3 лет",
                 min_age: 3,
                 max_age: 18,
                 cost_text: "Бесплатно с 'pass Activ' ta ville'",
                 cost_annual: 0,
-                registration: "Программа 2025: с 28 апреля по 5 июля. Обязательна онлайн-регистрация.",
-                conditions: "Открыто для всех жителей Жювиньяка.",
-                address: "Parvis de l'Hôtel de Ville, Place de la Lavande, Juvignac",
-                url: "https://www.juvignac.fr/activ-ta-ville-animations-for-all-april-october/"
+                registration: "Программа на 2025 год: с 28 апреля по 5 июля. Обязательна онлайн-регистрация для 'pass Activ' ta ville'.",
+                conditions: "Открыто для всех жителей Жювиньяка. Акцент на начальное обучение и благополучие. Некоторые занятия доступны для людей с ограниченными возможностями.",
+                address: "Parvis de l'Hôtel de Ville, Place de la Lavande, Place du Soleil, Parc Saint-Hubert, Terrasse ludique du complexe Ludwig Guttmann",
+                url: "https://www.juvignac.fr/activ-ta-ville-animations-for-all-april-october/",
+                schedule: "Расписание меняется по сезонам. Уточнять в программе 'Activ’ ta ville'."
+            },
+            {
+                name: "Жювиньяк (Little Learners)",
+                type: "Языки",
+                categories: ["Языки"],
+                location: "Жювиньяк",
+                description: "Мастер-классы по английскому языку (песни, игры, чтение).",
+                age_text: "3-12 лет",
+                min_age: 3,
+                max_age: 12,
+                cost_text: "Не указано.",
+                cost_annual: null,
+                registration: "Не указано для 2025-2026.",
+                conditions: "Не указано.",
+                address: "Place de la Lavande (упоминается в Activ' ta ville)",
+                url: "https://www.juvignac.fr/activ-ta-ville-animations-for-all-april-october/",
+                schedule: "Точное расписание не указано, вероятно, еженедельные занятия."
             },
             {
                 name: "Жювиньяк (3MTKD)",
                 type: "Спорт",
+                categories: ["Спорт"],
                 location: "Жювиньяк",
+                description: "Тхэквондо (бой, традиционные техники, боди-тренировки под музыку, растяжка), футбол (для младших детей и девочек).",
                 age_text: "От 4 лет",
                 min_age: 4,
                 max_age: 18,
                 cost_text: "От 260€/год",
                 cost_annual: 260,
-                registration: "Вероятно, в июле",
-                conditions: "Требуется медицинская справка.",
+                registration: "Мероприятие 3MTKD: 15 июня 2025 года. Общая информация о регистрации на 2024-2025: июль (вт/чт 16:30-19:30, ср 10:00-12:00 и 13:30-18:00).",
+                conditions: "Требуется медицинская справка. Соблюдение правил, расписания, гигиены.",
                 address: "Complexe sportif Ludwig Guttmann, Rue Neptune, 34990 Juvignac",
-                url: "https://www.helloasso.com/associations/3mtkd-sport-culture-social"
+                url: "https://www.helloasso.com/associations/3mtkd-sport-culture-social",
+                schedule: "Расписание 2024-2025: вт/чт 16:30-19:30, ср 10:00-12:00 и 13:30-18:00. Возможно, аналогичное на 2025-2026."
             },
             {
                 name: "Жювиньяк (Latin Fitness)",
                 type: "Танцы",
+                categories: ["Танцы"],
                 location: "Жювиньяк",
+                description: "Сальса, зумба, бачата, кизомба, хип-хоп, модерн-джаз.",
                 age_text: "От 5 лет",
                 min_age: 5,
                 max_age: 18,
                 cost_text: "Скидки при ранней регистрации. Разные тарифы.",
                 cost_annual: null,
-                registration: "С 1 июня через платформу Sportigo.",
-                conditions: "Требуется фото для Sportigo.",
+                registration: "С 1 июня через платформу Sportigo. Первый платеж в сентябре.",
+                conditions: "Требуется фото для Sportigo. Для пар: отдельный процесс регистрации. Приоритет прямому дебету SEPA.",
                 address: "Chemin de la plaine 34990 Juvignac",
-                url: "https://www.latinaddiction.fr/planning-tarifs-inscriptions/"
+                url: "https://www.latinaddiction.fr/planning-tarifs-inscriptions/",
+                schedule: "Расписание варьируется в зависимости от курса. Уточнять на платформе Sportigo."
             },
             {
-                name: "Кастельно-ле-Лез (MJC)",
+                name: "Жювиньяк (StrataJM)",
+                type: "Игры",
+                categories: ["Игры"],
+                location: "Жювиньяк",
+                description: "Настольные и стратегические игры (мастер-классы по введению и открытию).",
+                age_text: "Все поколения.",
+                min_age: 0,
+                max_age: 99,
+                cost_text: "Не указано.",
+                cost_annual: null,
+                registration: "Не указано для 2025-2026.",
+                conditions: "Фокус на народном образовании, содействие обмену и встречам.",
+                address: "Place du Soleil (упоминается в Activ' ta ville)",
+                url: "https://www.juvignac.fr/activ-ta-ville-animations-for-all-april-october/",
+                schedule: "Расписание не указано, вероятно, периодические мастер-классы."
+            },
+            {
+                name: "Кастельно-ле-Лез (MJC Castelnau-le-Lez)",
                 type: "Разное",
+                categories: ["Разное", "Искусство", "Спорт", "Музыка", "Игры", "Языки", "Здоровье", "Наука"],
                 location: "Кастельно-ле-Лез",
+                description: "Более 100 видов деятельности: изобразительное искусство, боевые искусства, благополучие, танцы, музыкальная школа, тренажерный зал/фитнес, логические игры, изобразительное искусство, лингвистика, активный отдых, науки, командные виды спорта. (Новинки 2024-2025: Современный танец, Восстановительная йога, Музыкальный театр, Электрогитара, Письменный мастер-класс, Скандинавская ходьба)",
                 age_text: "Все возрасты",
                 min_age: 0,
                 max_age: 99,
-                cost_text: "Членство 27€ + стоимость занятий",
+                cost_text: "Годовое членство: 27€ + стоимость занятий",
                 cost_annual: null,
-                registration: "С 9 сентября",
-                conditions: "Подтверждение места жительства для скидки.",
-                address: "Centre André Malraux, 10 avenue de la Moutte, 34170 Castelnau le Lez",
-                url: "https://mjc-castelnau.fr/"
+                registration: "Перерегистрация 2024-2025: 26 августа 2024. Новые регистрации 2024-2025: 9 сентября 2024. Информация на 2025-2026 ожидается ближе к началу учебного года.",
+                conditions: "Обязательное членство. Подтверждение места жительства для дифференцированного ценообразования. Соблюдение внутренних правил. Занятия следуют школьному расписанию, с некоторыми исключениями на каникулы.",
+                address: "Centre André Malraux, 10 avenue de la Moutte, 34170 Castelnau le Lez.",
+                url: "https://mjc-castelnau.fr/",
+                schedule: "Расписание зависит от выбранного занятия (более 100 видов). Уточнять на сайте MJC."
+            },
+            {
+                name: "Кастельно-ле-Лез (Служба спорта города)",
+                type: "Спорт",
+                categories: ["Спорт"],
+                location: "Кастельно-ле-Лез",
+                description: "'Спорт в семье' (игры на точность, коллективные игры, игры на скорость, музыкальные игры, фитнес, игры с противостоянием).",
+                age_text: "От 3 лет (для детей/внуков, участвующих со взрослыми).",
+                min_age: 3,
+                max_age: 99,
+                cost_text: "Не указано для 2025-2026. Тарифы 2024-2025: жители Кастельно: 110 €/год, социальный тариф 55 €. Нежители: 150 €. Адаптированный спорт: 30 €/год, социальный тариф 15 €. Скандинавская ходьба: 110 €/год, социальный тариф 55 €, нежители 150 €.",
+                cost_annual: null,
+                registration: "Бесплатные пробные занятия 'Спорт в семье': с сентября 2024. Связаться с Алексисом РАБЬЕ для информации/регистрации. Другие мероприятия: пробные занятия в сентябре 2024.",
+                conditions: "Свяжитесь с преподавателем спорта для получения конкретных деталей.",
+                address: "Palais des Sports",
+                url: "https://www.castelnau-le-lez.fr/sports/activites-sportives-service-sports/",
+                schedule: "Расписание 'Спорт в семье' по воскресеньям. Точные часы уточнять."
+            },
+            {
+                name: "Лаверюн (Foyer Rural)",
+                type: "Разное",
+                categories: ["Разное", "Спорт", "Игры", "Театр", "Искусство", "Музыка"],
+                location: "Лаверюн",
+                description: "Гимнастика, шахматы, дзюдо, настольный теннис, бадминтон, театр, рисование, музыка.",
+                age_text: "Все возрасты. Театр для детей: 7-11 лет.",
+                min_age: 0,
+                max_age: 99,
+                cost_text: "Для празднования 50-летия (июнь 2025): праздничный ужин 15€ (требуется предварительная запись). Общие членские взносы не указаны.",
+                cost_annual: null,
+                registration: "Неделя 50-летия: 14-22 июня 2025. Регистрация на ужин: 5 мая - 5 июня. Дни открытых дверей в спортзале: 16-22 июня 2025.",
+                conditions: "Свяжитесь с Foyer Rural для получения конкретных деталей регистрации на занятия.",
+                address: "Mas de la Farouch – Avenue des Serres, 34880 Lavérune. Château des Evêques (для мероприятий).",
+                url: "https://foyerruraldelaverune.fr/",
+                schedule: "Расписание занятий будет подтверждено. Дни открытых дверей 16-22 июня 2025."
+            },
+            {
+                name: "Лаверюн (Maison des Jeunes)",
+                type: "Разное",
+                categories: ["Разное", "Спорт", "Культура", "Активный отдых"],
+                location: "Лаверюн",
+                description: "Разнообразные мероприятия (спортивные, культурные, выезды, лагеря), Мини-футбол, Межкоммунальные мероприятия.",
+                age_text: "От CM2 до лицея (10-16 лет).",
+                min_age: 10,
+                max_age: 16,
+                cost_text: "Членство рассчитывается в зависимости от доходов родителей.",
+                cost_annual: null,
+                registration: "Не указано для 2025-2026.",
+                conditions: "Требуется полное досье (родительские разрешения, экстренная медицинская помощь, прививки).",
+                address: "Rue des Abîmes, Lavérune. Gymnase de Lavérune (мини-футбол).",
+                url: "https://www.laverune.fr/votre-commune-au-quotidien/education-jeunesse/maison-des-jeunes/joomlannuaire/fiche/4:maison-des-jeunes",
+                schedule: "Расписание меняется. Уточнять напрямую."
+            },
+            {
+                name: "Латт (Служба спорта города)",
+                type: "Спорт",
+                categories: ["Спорт"],
+                location: "Латт",
+                description: "Спортивные лагеря (футбол, гимнастика, гандбол, плавание/акроспорт, бадминтон, регби, капоэйра, теннис, баскетбол, легкая атлетика, петанк, волейбол, скалолазание, самооборона, бейсбол, стрельба из лука, ролики, алтимат).",
+                age_text: "CP/CE1, CE2/CM1/CM2, колледж/лицей.",
+                min_age: null, // Need to clarify age range for CP/CE1 etc. approx 6-15
+                max_age: null,
+                cost_text: "Спортивные лагеря: 68-134 €/неделя, в зависимости от занятия и возраста. Тарифы зависят от семейного дохода (200-360 € за некоторые поездки).",
+                cost_annual: null,
+                registration: "Спортивные лагеря на лето 2025: открыты с 13 мая. Регистрация через Espace Citoyen. Некоторые поездки открыты с 12 мая. Регистрация в школу на 2025: с 13 января 2025.",
+                conditions: "Для некоторых программ необходимо быть зарегистрированным в Quartier Jeunes. Для регистрации в школу/внешкольные занятия требуются: страховка гражданской ответственности, прививки, налоговая декларация, полная семейная книга.",
+                address: "Guichet familles, Espace Lattara, Place Jean de Lattre de Tassigny, 34970 Lattes.",
+                url: "https://www.ville-lattes.fr/secteur-scolaire/",
+                schedule: "Лагеря проводятся во время каникул, точное расписание уточнять при регистрации."
+            },
+            {
+                name: "Жаку (MJC Boby Lapointe)",
+                type: "Разное",
+                categories: ["Разное", "Спорт", "Искусство", "Культура", "Музыка", "Театр", "Танцы", "Здоровье"],
+                location: "Жаку",
+                description: "Более 50 спортивных, художественных и культурных мероприятий. Лагеря во время школьных каникул (кроме Рождества): специализированные (театр, танцы, пилатес) и мультиактивные (рисование, творческие мастер-классы). Мероприятия: музыкальные, театральные, K-pop шоу, VTT, футбол, регби, йога.",
+                age_text: "Мультиактивные лагеря: 6-13 лет. Специализированные лагеря: дети, подростки, взрослые. Театральные шоу: дети, подростки. VTT: все возрасты, несовершеннолетние со взрослыми. Регби: 6-14 лет. Йога: взрослые и дети от 5 лет.",
+                min_age: 5,
+                max_age: 99,
+                cost_text: "Годовое членство: индивидуальное 10 € (ребенок), 16 € (взрослый); семейное 30 € (3+ человека). Лагеря: 40-170 €. Специализированные лагеря: 60-65 €. Театральные/музыкальные шоу: 0-5 €. VTT: 3 €/ребенок, 5 €/семья. Скидки для жителей Жаку на некоторые ALSH.",
+                cost_annual: null,
+                registration: "Регистрация на 2025-2026: поэтапно с 9-15 июня 2025 до 11 июля, затем в конце августа. Онлайн-регистрация через Aniapp. Требуются: подтверждение места жительства, квотиент семейного дохода/налоговая декларация.",
+                conditions: "Членство обязательно для участия. Возможна оплата в рассрочку. Возврат средств только в особых случаях (болезнь, несчастный случай, переезд, потеря работы). Для некоторых занятий доступны пробные сессии.",
+                address: "Rue Nelson Mandela, 34830 Jacou. La Passerelle, Rue de l'Occitanie, 34830 Jacou.",
+                url: "https://mjcjacou.fr/",
+                schedule: "Расписание зависит от программы. Лагеря во время школьных каникул. Уточнять на сайте."
+            },
+            {
+                name: "Ле-Крес (Nouvel Essor (NESS))",
+                type: "Разное",
+                categories: ["Разное"],
+                location: "Ле-Крес",
+                description: "Программа не детализирована.",
+                age_text: "Не указано.",
+                min_age: null,
+                max_age: null,
+                cost_text: "Не указано.",
+                cost_annual: null,
+                registration: "День открытых дверей для презентации программы 2025/2026: 17 июня 2025, 9:00-12:00. Предварительная запись возможна после публикации программы.",
+                conditions: "Не указано.",
+                address: "Не указано.",
+                url: "https://www.lecres.fr/contenu/12/",
+                schedule: "День открытых дверей: 17 июня 2025, 9:00-12:00."
+            },
+            {
+                name: "Ле-Крес (Association Roulotte et Bergamote)",
+                type: "Театр",
+                categories: ["Театр"],
+                location: "Ле-Крес",
+                description: "Театральные мастер-классы, драматическое искусство, импровизация, обучение публичным выступлениям. Также спектакли.",
+                age_text: "Дети, подростки, взрослые.",
+                min_age: null,
+                max_age: null,
+                cost_text: "Для некоторых занятий требуется годовое членство. Определенный взнос для 'Cie amateur'. Бесплатных пробных занятий нет.",
+                cost_annual: null,
+                registration: "Присутствие на ярмарке ассоциаций в Пероле: 6 сентября 2025, 9:00-13:00. Существующие ученики имеют приоритет. Формы предварительной записи рассылаются в конце августа.",
+                conditions: "Минимум 8, максимум 12 учеников в группе. Расписание будет подтверждено. Летних лагерей нет, но лагеря планируются на школьные каникулы/выходные.",
+                address: "Не указано.",
+                url: "https://www.roulotteetbergamote.net/",
+                schedule: "Расписание будет подтверждено. Ярмарка ассоциаций: 6 сентября 2025, 9:00-13:00."
+            },
+            {
+                name: "Фабрег (ALSH 2.5-11 лет & ALP)",
+                type: "Общий досуг (ALSH/ALP)",
+                categories: ["Общий досуг (ALSH/ALP)", "Спорт", "Искусство", "Культура", "Игры"],
+                location: "Фабрег",
+                description: "ALSH: не детализированы на 2025-2026. ALP (январь-февраль 2025, тема 'Зимняя магия'): спорт (игры с мячом, вводный гандбол, эстафеты) и ручные занятия (оригами, зимнее дерево, белый медведь). Акцент на игровую, культурную, спортивную и художественную инициацию.",
+                age_text: "ALSH: 2.5-11 лет. ALP: детский сад и начальная школа.",
+                min_age: 2.5,
+                max_age: 11,
+                cost_text: "Не указано для 2025-2026. Для ALP тарифы зависят от семейного дохода.",
+                cost_annual: null,
+                registration: "Онлайн через Portail familles. Требуются: подтверждение места жительства, прививки, налоговая декларация, полная семейная книга.",
+                conditions: "Для ALP: занятия могут меняться из-за погоды или предпочтений детей. Родители должны предоставлять перекусы.",
+                address: "Mairie, 8 Rue Paul Doumer, 34690 Fabrègues. ALSH: 150 rue Georges Pompidou. Молодежный сектор: 14 rue Calmette.",
+                url: "https://www.fabregues.fr/lenfance-jeunesse/enfance-jeunesse/",
+                schedule: "ALP: утро/полдень/вечер в школьные дни. ALSH: среда и школьные каникулы. Точное расписание уточнять."
             },
             {
                 name: "Mad Monkey Montpellier",
                 type: "Спорт",
+                categories: ["Спорт"],
                 location: "Монпелье",
-                age_text: "Мин. вес 15 кг, от 3 лет",
+                description: "Скалолазание (Fun Climb, Monkey Pack, Climb and Play, Stages), Дни рождения.",
+                age_text: "Мин. вес 15 кг. Стажировки мин. 6 лет. Дни рождения: 3-12 лет.",
                 min_age: 3,
                 max_age: 18,
-                cost_text: "От 25€ (сессия 1 час)",
+                cost_text: "От 25€ (сессия 1 час); Стажировки от 59.90€ (0.5 дня).",
                 cost_annual: null,
-                registration: "Действительны до 31/12/2026",
-                conditions: "Требуется спортивная обувь.",
+                registration: "Предложения действительны до 31/12/2026.",
+                conditions: "Требуется спортивная обувь. Доступно для людей с ограниченными возможностями (PMR).",
                 address: "2929 avenue Etienne Méhul, 34070 Montpellier",
-                url: "https://www.madmonkey.fr/"
+                url: "https://www.madmonkey.fr/",
+                schedule: "Открыто каждый день. Точное расписание сессий уточнять на сайте."
             },
             {
                 name: "Boulder Line Montpellier / Castelnau",
                 type: "Спорт",
-                location: "Кастельно-ле-Лез",
-                age_text: "От 4 лет",
+                categories: ["Спорт"],
+                location: "Монпелье / Кастельно-ле-Лез",
+                description: "Боулдеринг (скалолазание без веревки), Boulder Camp Workshop, Дни рождения.",
+                age_text: "BL1 и BL3: От 4 лет. BL2: От 11 лет. Boulder Camp Workshop: 4-10 лет. Дни рождения: макс. 12 детей.",
                 min_age: 4,
                 max_age: 18,
-                cost_text: "Годовой: 520€",
+                cost_text: "Разовая тренировка: 16-17€; Абонемент на 10 посещений: 130-140€; Месячный абонемент: 52€; Годовой: 520€; Аренда скальных туфель: 4€; Вводный курс: БЕСПЛАТНО. Дни рождения: 210€ (до 12 детей).",
                 cost_annual: 520,
-                registration: "С 23 июня 2025",
-                conditions: "Обязательно ношение скальных туфель.",
-                address: "400 av. Marcel Dassault, Castelnau-le-Lez",
-                url: "https://boulderline.fr/"
+                registration: "Регистрация в Alti'Académie: с 23 июня 2025 года (на стойке регистрации). BL3 открывается летом 2025.",
+                conditions: "Обязательно ношение скальных туфель (возможна аренда).",
+                address: "BL1: 400 av. Marcel Dassault, Castelnau-le-Lez; BL2: 148 rue Jean Giroux, Montpellier; BL3: 27 Avenue de Toulouse, Montpellier (открытие летом 2025).",
+                url: "https://boulderline.fr/",
+                schedule: "Школа скалолазания по расписанию, свободное посещение в часы работы."
             },
             {
                 name: "Bricks 4 Kidz Montpellier",
                 type: "Наука и техника",
+                categories: ["Наука и техника"],
                 location: "Монферрье-сюр-Лез",
-                age_text: "3-13 лет",
+                description: "Мастер-классы LEGO® (Конструирование, Робототехника, Кодирование), Летние лагеря, Дни рождения, Школьные/колледж программы, Центры досуга.",
+                age_text: "3-13 лет.",
                 min_age: 3,
                 max_age: 13,
-                cost_text: "Не указано",
+                cost_text: "Не указано.",
                 cost_annual: null,
-                registration: "Не указано",
+                registration: "Не указано.",
                 conditions: "Образовательные мастер-классы по методике STEAM.",
                 address: "1B Pôle d’activité Sainte Julie, route de Mende, 34980 Montferrier sur Lez",
-                url: "https://bricks4kidz.fr/montpellier/"
+                url: "https://bricks4kidz.fr/montpellier/",
+                schedule: "Расписание зависит от программы. Уточнять напрямую."
+            },
+            {
+                name: "Lattes Loisirs et Culture (LLC)",
+                type: "Разное",
+                categories: ["Разное", "Искусство", "Здоровье", "Культура", "Танцы", "Игры", "Музыка", "Спорт"],
+                location: "Латт",
+                description: "Искусство (творчество, живопись, скульптура), Здоровье (аквааэробика, пилатес, йога, софрология), Культура (письмо, история, театр), Танцы (бачата, классика, модерн-джаз, хип-хоп, рок, сальса), Настольные игры, Музыка (хоры, музыкальная школа), Спорт (акваходьба, походы, велоспорт, самооборона, парусный спорт).",
+                age_text: "Все поколения.",
+                min_age: 0,
+                max_age: 99,
+                cost_text: "Информация на 2025-2026 будет доступна с 30 июня 2025. (Предыдущие тарифы: Членство для жителей Латт 35€/чел., 50€/пара; Для не жителей 40€/чел., 60€/пара. Разовое занятие: 5€).",
+                cost_annual: null,
+                registration: "Информация будет действительна с 30 июня 2025.",
+                conditions: "Обязательное годовое членство.",
+                address: "Le Guilhem VI, 5 rue des Chevaliers de Malte, Port Ariane, 34970 Lattes.",
+                url: "http://lattesloisirsculture.fr/",
+                schedule: "Расписание будет доступно с 30 июня 2025."
+            },
+            {
+                name: "Centre Socioculturel Gutenberg Grabels",
+                type: "Разное",
+                categories: ["Разное", "Спорт", "Танцы", "Искусство", "Образование", "Здоровье", "Языки", "Игры", "Садоводство"],
+                location: "Грабель",
+                description: "Спорт (Танцы, Хип-Хоп, Капоэйра, Тхэквондо, Кросс-тренинг, Айкидо), Искусство (Театр, История искусств, Акро-йога), Дошкольное образование (Бэби-гимнастика, массаж, развитие), Языки (Французский), Досуг (настольные игры), Садоводство, Помощь в учебе.",
+                age_text: "Дошкольники (0-6 лет), Дети (от 7 лет для психомоторики), Подростки, Взрослые, Пожилые.",
+                min_age: 0,
+                max_age: 99,
+                cost_text: "Семейное членство: 13€; Членство в ассоциации: 18€. Тарифы зависят от QF (требуется справка CAF/MSA/налоговый отчет).",
+                cost_annual: null,
+                registration: "Регистрация открыта на 'Art dans la Rue' (8 июня 2025). Конкретные даты для годовых мероприятий 2025-2026 не указаны.",
+                conditions: "Обязательное членство. Скидки для QF<1200€, безработных, AAH, или за несколько видов деятельности.",
+                address: "2 place Jean Jaurès (maison commune), 34790 Grabels.",
+                url: "https://www.centregutenberg.com/",
+                schedule: "Расписание зависит от активности. Уточнять напрямую."
+            },
+            {
+                name: "MJC Teyran",
+                type: "Разное",
+                categories: ["Разное", "Спорт", "Игры", "Танцы", "Искусство", "Культура", "Музыка", "Здоровье"],
+                location: "Тейран",
+                description: "Спорт и игры, Танцы, Искусство и культура, Музыка, Здоровье. (Новинки 2024-2025: Адаптивные танцы для детей, Шитье для родителей/детей, Шахматы, Гимнастика для родителей/детей, Фабрика шоу)",
+                age_text: "Дети, Взрослые, Люди с ограниченными возможностями.",
+                min_age: null,
+                max_age: null,
+                cost_text: "Индивидуальное членство: 23€; Семейное: 34€; Членство на стажировку: 7€. Годовая плата за каждое занятие (не подлежит возврату).",
+                cost_annual: null,
+                registration: "Регистрация возможна в течение всего года (пропорционально).",
+                conditions: "Обязательное членство. Пробные билеты (2 за 5€) возвращаются при регистрации. Скидки (10% для неплательщиков налогов, 5% с семейной картой, 5% за второе занятие - не суммируются).",
+                address: "Chemin des Sports, 34820 TEYRAN.",
+                url: "https://mjcteyran.com/",
+                schedule: "Расписание зависит от выбранного занятия. Уточнять напрямую."
+            },
+            {
+                name: "Montferrier Taekwondo Club",
+                type: "Спорт",
+                categories: ["Спорт"],
+                location: "Монферрье-сюр-Лез",
+                description: "Тхэквондо (бои, традиционные техники, боди, растяжка)",
+                age_text: "Дети, Подростки (от 13 лет), Взрослые.",
+                min_age: null,
+                max_age: null,
+                cost_text: "Не указано для 2025-2026. (Тарифы 2024-2025 доступны в брошюре ассоциаций).",
+                cost_annual: null,
+                registration: "Не указано.",
+                conditions: "Занятия основаны на традиционных техниках и игровых правилах.",
+                address: "Не указано.",
+                url: "https://ville-montferrier-sur-lez.fr/associations",
+                schedule: "Расписание не указано. Уточнять напрямую."
+            },
+            {
+                name: "Ofildel'art Montferrier-sur-Lez",
+                type: "Театр",
+                categories: ["Театр", "Искусство"],
+                location: "Монферрье-сюр-Лез",
+                description: "Театр (мастер-классы, декорации), Сказки.",
+                age_text: "Дети. Все аудитории для сказок.",
+                min_age: null,
+                max_age: null,
+                cost_text: "Не указано.",
+                cost_annual: null,
+                registration: "Не указано.",
+                conditions: "Мастер-классы для развития художественного выражения.",
+                address: "Не указано.",
+                url: "http://ofildelart.jimdo.com",
+                schedule: "Расписание не указано. Уточнять напрямую."
+            },
+            {
+                name: "FISE Academy Baillargues",
+                type: "Спорт",
+                categories: ["Спорт"],
+                location: "Байарг",
+                description: "Драйзен, Самокат (Начинающий, Средний, Продвинутый), BMX Flat (Начинающий, Продвинутый), BMX (Начинающий, Средний, Продвинутый)",
+                age_text: "Не указано (уровни от начинающего до продвинутого).",
+                min_age: null,
+                max_age: null,
+                cost_text: "Не указано.",
+                cost_annual: null,
+                registration: "Сезон 2025/2026.",
+                conditions: "Годовые курсы. Количество мест ограничено.",
+                address: "Skatepark de Baillargues (Gare); Salle de Baillargues, Rue de la chicane.",
+                url: "https://fiseacademiebaillargues.comiti-sport.fr/activites/school",
+                schedule: "Расписание курсов уточнять напрямую."
+            },
+            {
+                name: "L'Atelier d'Elodie (Шитье)",
+                type: "Искусство",
+                categories: ["Искусство"],
+                location: "Монпелье",
+                description: "Курсы шитья.",
+                age_text: "Дети (8-12 лет), Подростки (13-17 лет).",
+                min_age: 8,
+                max_age: 17,
+                cost_text: "Дети: Годовой 680€ (вкл. материалы), 10 занятий 260€, 5 занятий 155€. Подростки: Годовой 598€ (без материалов), 10 занятий 230€, 5 занятий 135€. Разовое занятие: 39€.",
+                cost_annual: null,
+                registration: "Годовой: 17 сентября 2025 - 17 июня 2026 (кроме школьных каникул). Онлайн-бронирование.",
+                conditions: "Возможен пробный урок.",
+                address: "Не указано.",
+                url: "https://www.atelierdelodie.com/cours-de-couture-enfant",
+                schedule: "Годовые курсы с сентября по июнь, еженедельно. Точные дни/часы уточнять при бронировании."
+            },
+            {
+                name: "Aqualove (Плавание)",
+                type: "Спорт",
+                categories: ["Спорт"],
+                location: "Монпелье",
+                description: "Летние стажировки по плаванию.",
+                age_text: "Дети 4-10 лет (все уровни). Старшие дети, если не умеют плавать.",
+                min_age: 4,
+                max_age: 10,
+                cost_text: "60€ / стажировка. Линия 'родитель-пловец': 30€/неделя.",
+                cost_annual: null,
+                registration: "Осень: 20-24 октября 2025. Зима: 23-27 февраля 2026. Весна: 20-24 апреля 2026.",
+                conditions: "Стажировка для всех уровней (от начального до 3-го).",
+                address: "Piscine Pitot (Centre Ville).",
+                url: "https://www.aqualove.fr/sport/stages/stages-natation-vacances",
+                schedule: "Стажировки проводятся в указанные даты, обычно ежедневно в течение недели."
+            },
+            {
+                name: "STM-CLUB (Кунг-Фу Ушу и Санда Бокс)",
+                type: "Спорт",
+                categories: ["Спорт"],
+                location: "Монпелье",
+                description: "Кунг-Фу Ушу, Санда Бокс.",
+                age_text: "Дети, Подростки, Взрослые (все уровни).",
+                min_age: null,
+                max_age: null,
+                cost_text: "Не указано.",
+                cost_annual: null,
+                registration: "Онлайн-регистрация открыта с 1 июля 2025. Возобновление занятий: 9 сентября 2025 (взрослые), 10 сентября 2025 (дети/подростки).",
+                conditions: "3 бесплатных пробных занятия.",
+                address: "10 Bis, rue Adolphe Mion, Montpellier.",
+                url: "https://stm-club.com/planning-des-cours/",
+                schedule: "Возобновление занятий 9/10 сентября 2025. Точное расписание по дням и часам уточнять на сайте."
+            },
+            {
+                name: "OMMB (Ouest Montpellier Métropole Basket)",
+                type: "Спорт",
+                categories: ["Спорт"],
+                location: "Сент-Жан-де-Ведас / Фабрег",
+                description: "Баскетбол (3x3, 5x5), Бэби-баскетбол.",
+                age_text: "3x3: U11-U15, U16-U19 (2010-2014 г.р.). Бэби-баскетбол: Пиньян. 'Приведи подругу': 2013-2018 г.р.",
+                min_age: null,
+                max_age: null,
+                cost_text: "3x3: 180€ (для членов OMMB), 120€ (дополнение к 5x5).",
+                cost_annual: null,
+                registration: "Продление лицензий 2025/2026: 15 июня - 15 июля 2025.",
+                conditions: "Оплата через HelloAsso, банковской картой, наличными, чеками.",
+                address: "Gymnase Miralles, Rue Federico Garcia, 34430 Saint-Jean-de-Védas. Gymnase Baronchelli, Rue Jean-Marc Rouan, 34690 Fabrègues.",
+                url: "https://www.omm-basket.com/",
+                schedule: "Расписание тренировок уточнять напрямую с клубом."
+            },
+            {
+                name: "Ligue Occitanie de Handball",
+                type: "Спорт",
+                categories: ["Спорт"],
+                location: "Окситания (Монпелье)",
+                description: "Гандбол (Бэби-гандбол, первые шаги, мини-гандбол, соревновательный, любительский, хэндфит, гандбол 4х4, пляжный, хэндсамбль).",
+                age_text: "Бэби-гандбол, первые шаги, мини-гандбол, до 15 лет, до 17 лет, до 18 лет.",
+                min_age: null,
+                max_age: null,
+                cost_text: "Не указано.",
+                cost_annual: null,
+                registration: "Регистрация тренеров по гандболу 2025-2026: не позднее 19 июня 2025 (12:00).",
+                conditions: "Не указано.",
+                address: "Palais des Sports André Brouat (Тулуза) для финалов.",
+                url: "https://www.occitanie-handball.fr/",
+                schedule: "Расписание занятий зависит от категории и места проведения. Уточнять у местных клубов."
+            },
+            {
+                name: "Athlé 632 (Легкая атлетика)",
+                type: "Спорт",
+                categories: ["Спорт"],
+                location: "Плезанс-дю-Туш (рядом с Монпелье)",
+                description: "Легкая атлетика (Прыжки с шестом, Спринт, Метание молота, Прыжки в длину, Барьеры, Эстафета, Ориентирование, Командные виды спорта, Техника), Мини-Олимпиады, Лазертаг, Бассейн, Настольные игры.",
+                age_text: "Дети 2015-2011 г.р. включительно.",
+                min_age: null,
+                max_age: null,
+                cost_text: "В неделю: 215€. В день (пн-чт): 45€. В день (пт): 55€..",
+                cost_annual: null,
+                registration: "Летняя стажировка 2025: 7-11 июля. Предварительная регистрация на сайте.",
+                conditions: "Обед включен.",
+                address: "Piste d'Athlétisme du Collège Jules Verne, Plaisance-ду-Touch.",
+                url: "https://www.athle-632.fr/",
+                schedule: "Летние стажировки проводятся ежедневно в течение недели."
+            },
+            {
+                name: "Altissimo (Скалолазание)",
+                type: "Спорт",
+                categories: ["Спорт"],
+                location: "Монпелье",
+                description: "Школа скалолазания Alti'Académie.",
+                age_text: "Не указано.",
+                min_age: null,
+                max_age: null,
+                cost_text: "Не указано.",
+                cost_annual: null,
+                registration: "Регистрация в Alti'Académie 2025-2026: с 23 июня 2025 (на стойке регистрации).",
+                conditions: "Расписание и формы регистрации будут доступны онлайн в день регистрации.",
+                address: "Altissimo Montpellier Odysseum.",
+                url: "https://montpellier-odysseum.altissimo.fr/ecole-d-escalade.html",
+                schedule: "Расписание школы скалолазания будет доступно 23 июня 2025."
+            },
+            {
+                name: "Swing Cat école danse Montpellier",
+                type: "Танцы",
+                categories: ["Танцы", "Искусство"],
+                location: "Монпелье / Латт",
+                description: "Танцы (Линди-хоп, Рок, Сальса, Бачата, Бальбоа, Вест-Кост, Соло-свинг, Чечетка, Хип-хоп, Стрит-джаз, Модерн-джаз, Хилс, Введение в танец, Развивающий танец, Дэнсхолл, Дэнсхолл Гьял, Кабаре, Таитянский танец).",
+                age_text: "Дети, Подростки, Взрослые. Развивающий танец.",
+                min_age: null,
+                max_age: null,
+                cost_text: "Тарифы адаптированы под любой бюджет.",
+                cost_annual: null,
+                registration: "Предварительная регистрация 2025/2026: открыта. Летние стажировки 2025: 24 июня - 1 июля. Открытие регистрации на август 2025.",
+                conditions: "Более 25 лет опыта.",
+                address: "Centre Culturel Le GAM, Esp. Com. Fréjorgues Ouest, 46, Rue R. Garros, 34130 Mauguio/Lattes/Montpellier Sud. Théâtre Jacques Cœur à Lattes (для гала).",
+                url: "https://www.swingcatcie.com/",
+                schedule: "Расписание занятий будет доступно при регистрации. Летние стажировки в указанные даты."
+            },
+            {
+                name: "La Petite Académie (Рисование, Живопись, Скульптура)",
+                type: "Искусство",
+                categories: ["Искусство"],
+                location: "Не указано (Клермон-Ферран, Реймс и т.д. - уточнять для Монпелье)",
+                description: "Рисование, Живопись, Скульптура, Комиксы/Манга, Мульти-техники.",
+                age_text: "Дети (4-12 лет), Подростки (от 13 лет), Взрослые.",
+                min_age: 4,
+                max_age: null,
+                cost_text: "Дети (4-12 лет): 485-590€/год. Подростки (от 13 лет): 635-649€/год. Стажировки (4-12 лет): 180-270€/неделя (или полдня).",
+                cost_annual: null,
+                registration: "Регистрация 2025-2026. Занятия с 8 сентября 2025 по 14 июня 2026 (кроме каникул/праздников). Пробные занятия бесплатны в сентябре.",
+                conditions: "Не указано.",
+                address: "Не указано.",
+                url: "https://www.lapetiteacademie.com/petite-academie/",
+                schedule: "Занятия с 8 сентября 2025 по 14 июня 2026. Расписание уточнять у конкретного филиала."
             },
             {
                 name: "Patinoire Vegapolis",
                 type: "Спорт",
+                categories: ["Спорт"],
                 location: "Монпелье",
-                age_text: "Все возрасты",
+                description: "Катание на коньках, фигурное катание, танцы на льду, хоккей, картинг на льду (для взрослых). Образовательные программы для начальных школ.",
+                age_text: "Все возрасты. Дети до 3 лет бесплатно. Дети до 10 лет. Картинг на льду для взрослых.",
                 min_age: 0,
                 max_age: 99,
-                cost_text: "Годовой от 241€",
+                cost_text: "Вход: от 5,50 € (Pass Métropole) до 6,50 €. Прокат коньков: 3,50 €. Абонементы на 10 посещений: от 36,85 € (дети до 10 лет) до 44,70 € (взрослые). Годовой абонемент: от 241 € до 285 €. Стажировки: от 100,55 € до 111,80 €.",
                 cost_annual: 241,
-                registration: "Открыто 365 дней",
-                conditions: "Требуется Pass Métropole для льгот.",
+                registration: "Открыто 365 дней в году.",
+                conditions: "Требуется Pass Métropole для льготных тарифов. Для регистрации: свидетельство о рождении, подтверждение места жительства, фото.",
                 address: "Quartier Odysseum, Place de France, 34000 Montpellier",
-                url: "https://www.montpellier3m.fr/vegapolis"
+                url: "https://www.montpellier3m.fr/vegapolis",
+                schedule: "Открыто ежедневно, часы работы уточнять на сайте."
             },
             {
                 name: "Le Nuage",
                 type: "Спорт",
+                categories: ["Спорт", "Здоровье"],
                 location: "Монпелье",
-                age_text: "Дети, младенцы",
+                description: "Фитнес, кардио-тренировки, аквабайк, плавание для детей, бэби-плавание, сауна. Персональные тренировки.",
+                age_text: "Дети (для плавания), младенцы (для бэби-плавания).",
                 min_age: 0,
                 max_age: 12,
-                cost_text: "Плавание для детей: 450€/год",
+                cost_text: "Стартовый пакет (обязателен для абонементов): 99 €. Годовой абонемент: 730 €. Месячные абонементы: от 49,90 € до 61 €. Плавание для детей/младенцев: 450 €/год.",
                 cost_annual: 450,
-                registration: "Онлайн или на ресепшене",
-                conditions: "Обязательный стартовый пакет 99€.",
+                registration: "Регистрация онлайн или на ресепшене клуба.",
+                conditions: "Абонемент дает доступ к более чем 180 клубам RESOFIT.",
                 address: "769 Avenue de la Mer-Raymond Dugrand, 34000 Montpellier",
-                url: "https://le-nuage.fr/"
+                url: "https://le-nuage.fr/",
+                schedule: "Часы работы клуба уточнять на сайте. Занятия по расписанию."
+            },
+            {
+                name: "En Movance",
+                type: "Танцы",
+                categories: ["Танцы"],
+                location: "Л'Иль-сюр-ла-Сорг (не Монпелье)",
+                description: "Обучение танцам (классический, джаз, современный), подготовка к экзаменам (EAT).",
+                age_text: "От 18 лет (для профессионального обучения).",
+                min_age: 18,
+                max_age: 99,
+                cost_text: "Стоимость обучения: от 1980 € до 4620 €. Регистрационный взнос: 160 € (80 € при продолжении обучения). Членство: 25 €.",
+                cost_annual: 1980,
+                registration: "Прослушивания на 2025-2026 учебный год: 9 марта, 8 июня, 23 августа.",
+                conditions: "Требуется медицинская справка.",
+                address: "Centre Danse Mouvance, 6 avenue de la petite marine, 84800 L'Isle sur la Sorgue",
+                url: "https://www.dansemouvance.org/",
+                schedule: "Расписание занятий уточнять после прослушивания."
+            },
+            {
+                name: "Trance'endance",
+                type: "Спорт",
+                categories: ["Спорт", "Здоровье"],
+                location: "Не указано (активность найдена в Гиянкуре)",
+                description: "Кросс-тренинг для всей семьи (выносливость, ловкость, скорость, сила).",
+                age_text: "От 4 лет (для детей).",
+                min_age: 4,
+                max_age: 99,
+                cost_text: "12 € (первая запись), 6 € (для других членов семьи).",
+                cost_annual: null,
+                registration: "Не указано.",
+                conditions: "Занятия проводятся раз в месяц по воскресеньям (1,5 часа).",
+                address: "Не указано.",
+                url: null,
+                schedule: "Раз в месяц по воскресеньям (1,5 часа), точные даты уточнять."
             },
             {
                 name: "Bloc Session",
                 type: "Спорт",
+                categories: ["Спорт"],
                 location: "Монпелье",
-                age_text: "4+ лет",
+                description: "Боулдеринг (скалолазание без веревки), школа скалолазания.",
+                age_text: "Дети 4-6 лет, 6-8 лет, 9-12 лет. Подростки от 13 лет. Взрослые от 16 лет.",
                 min_age: 4,
-                max_age: 18,
-                cost_text: "Годовая школа от 360€",
+                max_age: 99,
+                cost_text: "Годовая школа: 360 € (4-6 лет), 430 € (6-12 лет), 540 € (от 13 лет). Месячные абонементы: от 30 € (детский) до 42 €. Разовое посещение: от 10 € (детский).",
                 cost_annual: 360,
-                registration: "Не указано",
-                conditions: "Разные группы по возрасту",
+                registration: "Не указано.",
+                conditions: "Не указано.",
                 address: "2492 Avenue de la justice de castelnau, 34090 Montpellier",
-                url: "https://www.blocsession.com/tarifs/"
+                url: "https://www.blocsession.com/tarifs/",
+                schedule: "Школа скалолазания по расписанию, свободное посещение в часы работы."
             },
             {
                 name: "Ecole Montessori bilingue Montpellier",
                 type: "Образование",
+                categories: ["Образование", "Языки"],
                 location: "Монпелье",
-                age_text: "3-12 лет",
+                description: "Двуязычное образование (французский/английский), уход после школы, 'природные среды' по средам, лагеря во время каникул.",
+                age_text: "От 3 лет (дошкольники), 6-12 лет (начальная школа).",
                 min_age: 3,
                 max_age: 12,
-                cost_text: "Годовое обучение от 6295€",
+                cost_text: "Годовое обучение: 6295 € (3-6 лет), 6555 € (6-12 лет). Регистрационный взнос: 450 € (за семью, ежегодно). Уход после школы: 8 €/утро, 6 €/вечер, 60 €/среда. Лагеря: 290 €/неделя.",
                 cost_annual: 6295,
-                registration: "С 6 января 2025",
-                conditions: "Скидки на второго/третьего ребенка.",
+                registration: "Предварительная запись на 2025 год: 6 января - 7 февраля 2025 (для дошкольников).",
+                conditions: "Скидки 10% (второй ребенок), 15% (третий ребенок).",
                 address: "68 Rue du Mas de Calage, 34070 Montpellier",
-                url: "https://ecole-montessori-montpellier.fr/tarifs-et-inscriptions-2/"
+                url: "https://ecole-montessori-montpellier.fr/tarifs-и-inscriptions-2/",
+                schedule: "Учебный год с сентября по июнь. Уход после школы утром/вечером. 'Природные среды' по средам. Лагеря во время каникул. Точное расписание уточнять."
+            },
+            {
+                name: "Montessori Lavérune",
+                type: "Образование",
+                categories: ["Образование"],
+                location: "Лаверюн",
+                description: "Образование по методике Монтессори.",
+                age_text: "Дошкольники, начальная школа, колледж.",
+                min_age: null,
+                max_age: null,
+                cost_text: "Регистрационный взнос (первый год): 1450 € (скидка 50% для второго ребенка). Годовое обучение: 5988 € (дошкольники/начальная школа), 7188 € (колледж). Вечерняя продленка: 940 €/год или 9,50 €/занятие.",
+                cost_annual: 5988,
+                registration: "Не указано.",
+                conditions: "Возможность пробных дней (65 €/день, вычитается из регистрационного взноса).",
+                address: "Не указано.",
+                url: "https://montessori-laverune.fr/tarifs/",
+                schedule: "Учебный год с сентября по июнь. Часы работы продленки."
             },
             {
                 name: "Chore-Danse Montpellier",
                 type: "Танцы",
+                categories: ["Танцы", "Искусство"],
                 location: "Монпелье",
-                age_text: "4+ лет",
+                description: "Танцы (модерн, классический, баре на полу).",
+                age_text: "Дети, подростки, взрослые. Уровни: 'Eveil' (4-5 лет), 'Initiation' (6-7 лет), 'Préparatoire' (8-10 лет), 'Elémentaire' (11-13 лет), 'Ado' (11-15 лет).",
                 min_age: 4,
-                max_age: 18,
-                cost_text: "От 495€/год",
+                max_age: 99,
+                cost_text: "1 курс: 495 € (дети), 355 € (взрослые). 2 курса: от 670 € (дети) до 750 €.",
                 cost_annual: 495,
-                registration: "Досье на 2025-2026 доступно",
-                conditions: "Требуется мед. справка.",
-                address: "181 Avenue St Charles - 34000 Montpellier",
-                url: "https://chore-danse.fr/"
+                registration: "Досье на 2025-2026 учебный год доступно.",
+                conditions: "Требуется медицинская справка. Оплата в рассрочку (до 5 платежей).",
+                address: "2bis rue d'Aigrefeuille - 34000 Montpellier (корреспонденция). 181 Avenue St Charles - 34000 Montpellier (вход в студию).",
+                url: "https://chore-danse.fr/wp-content/uploads/2025/06/Dossier-CHOREDANSE-inscription-2025-2026.pdf",
+                schedule: "Расписание занятий будет доступно в досье на 2025-2026."
+            },
+            {
+                name: "Choreart Montpellier",
+                type: "Танцы",
+                categories: ["Танцы", "Искусство"],
+                location: "Монпелье",
+                description: "Танцы (различные форматы абонементов: Solo, Duo, Maxi).",
+                age_text: "8-17 лет, взрослые.",
+                min_age: 8,
+                max_age: 99,
+                cost_text: "Годовой абонемент (8-17 лет): от 304 € до 565 €. Квартальный абонемент (8-17 лет): от 136 € до 253 €. Годовое членство: 16 €.",
+                cost_annual: 304,
+                registration: "Тарифы на 2025-2026 учебный год указаны.",
+                conditions: "Скидка 10% (см. условия).",
+                address: "Не указано.",
+                url: "https://www.choreart.org/tarifs/",
+                schedule: "Расписание уточнять напрямую."
             },
             {
                 name: "ASPTT Kidisport Montpellier",
                 type: "Спорт",
+                categories: ["Спорт", "Здоровье"],
                 location: "Монпелье",
-                age_text: "18 мес. - 9 лет",
+                description: "Мультиспорт (активности противостояния, с мячом, с ракетками, атлетические, гимнастические). BabySport (развитие моторики).",
+                age_text: "Kidisport: 3-4 года, 4-5 лет, 5-6 лет. Kidisport+: 6-9 лет. BabySport: 18-30 месяцев.",
                 min_age: 1.5,
                 max_age: 9,
-                cost_text: "275€/год",
+                cost_text: "275 €/год.",
                 cost_annual: 275,
-                registration: "Не указано",
-                conditions: "Мультиспорт и развитие моторики.",
+                registration: "Не указано.",
+                conditions: "Возможность заниматься спортом одновременно с ребенком.",
                 address: "Complexe sportif Léon Cazal, 237 route de Vauguières, 34000 Montpellier",
-                url: "https://montpellier.asptt.com/activity/kidisport/"
+                url: "https://montpellier.asptt.com/activity/kidisport/",
+                schedule: "Расписание занятий уточнять напрямую."
             },
             {
                 name: "Association MIR Franco-Russe",
                 type: "Языки",
+                categories: ["Языки", "Культура"],
                 location: "Монпелье",
-                age_text: "3-9 лет",
+                description: "Курсы русского языка (для детей-билингвов, детей 4-6 лет, детей 3-5 лет), разговорные клубы для взрослых. Культурные проекты, языковые обмены, покупка книг, путешествия.",
+                age_text: "Дети-билингвы (6-9 лет), дети (4-6 лет), дети (3-5 лет).",
                 min_age: 3,
                 max_age: 9,
-                cost_text: "250-350€/год",
+                cost_text: "Курсы русского языка для детей: 250-350 €. 10 индивидуальных занятий: 317 €.",
                 cost_annual: 250,
-                registration: "Не указано",
-                conditions: "Курсы русского языка.",
-                address: "Maison des langues, Montpellier",
-                url: "https://www.helloasso.com/associations/association-mir-franco-russe"
+                registration: "Не указано.",
+                conditions: "Скидки для нескольких детей из одной семьи.",
+                address: "Maison des langues (для очных занятий).",
+                url: "https://www.helloasso.com/associations/association-mir-franco-russe/adhesions/inscription-cours-de-langue-russe-2024-2025",
+                schedule: "Расписание занятий уточнять напрямую."
             },
             {
                 name: "Les enfants russes de Montpellier",
                 type: "Языки",
+                categories: ["Языки", "Культура", "Театр", "Музыка", "Искусство"],
                 location: "Монпелье",
-                age_text: "Дети",
+                description: "Школа русского языка, театр, музыка, развитие речи, рукоделие, русская литература и страноведение. Организация 'Русских каникул' (лагерей).",
+                age_text: "Дети.",
                 min_age: 3,
                 max_age: 16,
-                cost_text: "Не указано",
+                cost_text: "Не указано.",
                 cost_annual: null,
-                registration: "Не указано",
-                conditions: "Школа русского языка, театр, музыка.",
-                address: "Montpellier",
-                url: "https://enfantsrussesmontpellier.fr/"
+                registration: "Не указано.",
+                conditions: "Не указано.",
+                address: "Монпелье",
+                url: "https://enfantsrussesmontpellier.fr/",
+                schedule: "Расписание занятий и лагерей уточнять напрямую."
             },
             {
-                name: "Консерватория Монпелье",
+                name: "Консерватория Монпелье (Conservatoire à Rayonnement Régional)",
                 type: "Музыка",
+                categories: ["Музыка", "Танец", "Театр", "Искусство"],
                 location: "Монпелье",
-                age_text: "От 5 лет",
+                description: "Музыка (ударные, струнные, фортепиано, духовые, вокал, джаз, старинная музыка, традиционная, электроакустическая), танец, театр. Музыкальное развитие, инструментальные занятия, ансамбли, хор.",
+                age_text: "Дети, подростки, взрослые. Музыкальное развитие: от 5 лет.",
                 min_age: 5,
                 max_age: 99,
-                cost_text: "Зависит от курса",
+                cost_text: "Некоторые курсы бесплатны при членстве в APEC (16 €/год).",
                 cost_annual: null,
-                registration: "Конец июня - начало июля 2025",
-                conditions: "Требуется мед. справка для танцоров.",
+                registration: "Предварительная запись на музыкальное развитие (от 5 лет): 30 июня - 1 июля 2025 (онлайн). Предварительная запись на танцевальное развитие/инициацию: 2-3 июля 2025 (онлайн). Перерегистрация: 16-27 июня 2025.",
+                conditions: "Требуется медицинская справка для танцоров.",
                 address: "Cité des Arts, 13 Avenue du Professeur Grasset, 34090 Montpellier",
-                url: "https://conservatoire.montpellier3m.fr"
+                url: "https://conservatoire.montpellier3m.fr/articles/1ere-inscription-0",
+                schedule: "Расписание занятий и курсов будет доступно при регистрации."
             }
         ];
 
 
         document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('search-input');
+            // Removed searchInput variable
+            // const searchInput = document.getElementById('search-input');
             const activityTypeFilter = document.getElementById('activity-type-filter');
             const locationFilter = document.getElementById('location-filter');
             const ageFilter = document.getElementById('age-filter');
@@ -532,19 +1113,30 @@
                 }
                 
                 data.forEach(item => {
+                    // Generate tags HTML
+                    const tagsHtml = item.categories.map(tag => `
+                        <span class="text-xs font-semibold uppercase tracking-wider text-teal-600 bg-teal-100 px-2 py-1 rounded-full whitespace-nowrap">
+                            ${tag}
+                        </span>
+                    `).join('');
+
                     const card = document.createElement('div');
                     card.className = 'bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105';
                     card.innerHTML = `
                         <div class="p-6">
-                            <div class="flex justify-between items-start">
-                                <h3 class="text-xl font-bold text-slate-900 mb-2">${item.name}</h3>
-                                <span class="text-xs font-semibold uppercase tracking-wider text-teal-600 bg-teal-100 px-2 py-1 rounded-full">${item.type}</span>
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold text-slate-900">${item.name}</h3>
                             </div>
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                ${tagsHtml}
+                            </div>
+                            <p class="text-slate-600 text-sm mb-2">${item.description}</p>
                             <p class="text-slate-600 mb-1"><strong>📍 Место:</strong> ${item.location}</p>
                             <p class="text-slate-600 mb-1"><strong>👶 Возраст:</strong> ${item.age_text}</p>
-                            <p class="text-slate-600 mb-4"><strong>💰 Стоимость:</strong> ${item.cost_text || 'Не указана'}</p>
-                            <button class="details-toggle w-full text-left text-teal-700 font-semibold py-2">Подробнее ▼</button>
+                            <p class="text-slate-600 mb-1"><strong>💰 Стоимость:</strong> ${item.cost_text || 'Не указана'}</p>
                             <div class="details-content mt-4 border-t pt-4 text-slate-700">
+                                <p class="text-slate-600 mb-4"><strong>⏰ Расписание:</strong> ${item.schedule || 'Не указано'}</p>
+                                <button class="details-toggle w-full text-left text-teal-700 font-semibold py-2">Подробнее ▼</button>
                                 <p class="mb-2"><strong>🗓️ Регистрация:</strong> ${item.registration}</p>
                                 <p class="mb-2"><strong>📝 Условия:</strong> ${item.conditions}</p>
                                 <p class="mb-4"><strong>🏠 Адрес:</strong> ${item.address}</p>
@@ -557,18 +1149,21 @@
             }
 
             function filterAndRender() {
-                const searchTerm = searchInput.value.toLowerCase();
+                // Removed searchTerm variable and its usage
+                // const searchTerm = searchInput.value.toLowerCase();
                 const selectedType = activityTypeFilter.value;
                 const selectedLocation = locationFilter.value;
                 const selectedAge = ageFilter.value ? parseInt(ageFilter.value, 10) : null;
                 
                 const filteredData = activitiesData.filter(item => {
-                    const nameMatch = item.name.toLowerCase().includes(searchTerm);
+                    // Removed nameMatch from filter condition
+                    // const nameMatch = item.name.toLowerCase().includes(searchTerm);
+                    // Filter logic still uses 'type' for the dropdown, as it's the main filter.
                     const typeMatch = selectedType === 'all' || item.type === selectedType;
                     const locationMatch = selectedLocation === 'all' || item.location === selectedLocation;
                     const ageMatch = !selectedAge || (selectedAge >= item.min_age && selectedAge <= item.max_age);
                     
-                    return nameMatch && typeMatch && locationMatch && ageMatch;
+                    return typeMatch && locationMatch && ageMatch; // Only filter by type, location, and age
                 });
                 
                 resultsCount.textContent = `${filteredData.length} найдено`;
@@ -643,14 +1238,15 @@
             //     costChart.update();
             // }
 
-
-            searchInput.addEventListener('input', filterAndRender);
+            // Removed event listener for searchInput
+            // searchInput.addEventListener('input', filterAndRender);
             activityTypeFilter.addEventListener('change', filterAndRender);
             locationFilter.addEventListener('change', filterAndRender);
             ageFilter.addEventListener('input', filterAndRender);
 
             resetBtn.addEventListener('click', () => {
-                searchInput.value = '';
+                // Removed searchInput value reset
+                // searchInput.value = '';
                 activityTypeFilter.value = 'all';
                 locationFilter.value = 'all';
                 ageFilter.value = '';
