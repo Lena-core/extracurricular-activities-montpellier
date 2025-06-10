@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Внеклассные занятия для детей в Монпелье 2025-2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Removed Chart.js CDN as infographics are no longer needed. -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Warm Neutral with Teal Accent -->
-    <!-- Application Structure Plan: A single-page dashboard design is used for immediate access to all information and controls. The structure includes: 1) A prominent top filter bar (by type, location, age, cost, search) for intuitive data exploration. 2) A dynamic analytics section with charts (activity distribution, cost comparison) that instantly reflects filter changes, providing a high-level overview. 3) A responsive card grid for displaying detailed results. This task-oriented approach, where filtering is the primary interaction, is more user-friendly for parents trying to find specific activities than a static table or linear report structure. The goal is to empower users to quickly narrow down the vast number of options to a manageable, relevant list. -->
+    <!-- Application Structure Plan: A single-page dashboard design is used for immediate access to all information and controls. The structure includes: 1) A prominent top filter bar (by type, location, age, cost, search) for intuitive data exploration. 2) A responsive card grid for displaying detailed results. This task-oriented approach, where filtering is the primary interaction, is more user-friendly for parents trying to find specific activities than a static table or linear report structure. The goal is to empower users to quickly narrow down the vast number of options to a manageable, relevant list. -->
     <!-- Visualization & Content Choices:
         - Report Info: Full list of activities. Goal: Organize/Filter. Method: Interactive card grid. Interaction: Filtering controls update the grid. Justification: Cards are more readable and mobile-friendly than a wide table. Library: HTML/CSS/Tailwind + Vanilla JS.
-        - Report Info: Activity Types. Goal: Inform/Compare Proportions. Method: Donut Chart. Interaction: Updates with filters. Justification: Shows the categorical breakdown of available activities at a glance. Library: Chart.js (Canvas).
-        - Report Info: Activity Costs & Types. Goal: Compare Values. Method: Bar Chart. Interaction: Updates with filters. Justification: Allows for easy comparison of the average financial commitment across different activity categories. Library: Chart.js (Canvas).
         - Report Info: All other details (address, registration, etc.). Goal: Inform (on demand). Method: Expandable section within each card. Interaction: Click to show/hide. Justification: Keeps the initial view clean and prevents information overload, allowing users to drill down on specific items of interest. Library: Vanilla JS. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
@@ -20,18 +18,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc; /* slate-50 */
         }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 400px;
-            height: 300px;
-            margin: auto;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
-            }
-        }
+        /* Removed chart-container styling as charts are no longer present. */
         .details-content {
             max-height: 0;
             overflow: hidden;
@@ -95,22 +82,7 @@
             </div>
         </section>
         
-        <section id="stats" class="mb-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div class="bg-white p-6 rounded-xl shadow-lg">
-                    <h2 class="text-xl font-bold text-center mb-4">Виды занятий</h2>
-                    <div class="chart-container">
-                        <canvas id="activityTypeChart"></canvas>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-lg">
-                    <h2 class="text-xl font-bold text-center mb-4">Средняя годовая стоимость (€)</h2>
-                    <div class="chart-container h-[350px]">
-                        <canvas id="costChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <!-- Removed the entire #stats section which contained the infographics (charts). -->
 
         <section id="results">
             <div class="flex justify-between items-center mb-4">
@@ -527,9 +499,10 @@
             const loader = document.getElementById('loader');
             const resetBtn = document.getElementById('reset-filters');
             
-            const activityTypeChartCanvas = document.getElementById('activityTypeChart');
-            const costChartCanvas = document.getElementById('costChart');
-            let activityTypeChart, costChart;
+            // Removed Chart.js related canvas elements and chart variables.
+            // const activityTypeChartCanvas = document.getElementById('activityTypeChart');
+            // const costChartCanvas = document.getElementById('costChart');
+            // let activityTypeChart, costChart;
             
             function populateFilters() {
                 const activityTypes = [...new Set(activitiesData.map(item => item.type))].sort();
@@ -600,72 +573,75 @@
                 
                 resultsCount.textContent = `${filteredData.length} найдено`;
                 renderCards(filteredData);
-                updateCharts(filteredData);
+                // Removed chart update calls as charts are no longer present.
+                // updateCharts(filteredData);
             }
 
-            function setupCharts() {
-                const initialData = activitiesData;
-                
-                const typeCtx = activityTypeChartCanvas.getContext('2d');
-                activityTypeChart = new Chart(typeCtx, {
-                    type: 'doughnut',
-                    data: { labels: [], datasets: [{ data: [], backgroundColor: ['#14b8a6', '#0d9488', '#0f766e', '#047857', '#065f46', '#064e3b', '#a7f3d0', '#6ee7b7', '#34d399'] }] },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom', labels: { boxWidth: 15, padding: 15 } }
-                        }
-                    }
-                });
-
-                const costCtx = costChartCanvas.getContext('2d');
-                costChart = new Chart(costCtx, {
-                    type: 'bar',
-                    data: { labels: [], datasets: [{ label: 'Средняя годовая стоимость (€)', data: [], backgroundColor: '#14b8a6' }] },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false }
-                        },
-                        scales: {
-                            x: { beginAtZero: true }
-                        }
-                    }
-                });
-                
-                updateCharts(initialData);
-            }
+            // Removed setupCharts function as charts are no longer present.
+            // function setupCharts() {
+            //     const initialData = activitiesData;
+            //     
+            //     const typeCtx = activityTypeChartCanvas.getContext('2d');
+            //     activityTypeChart = new Chart(typeCtx, {
+            //         type: 'doughnut',
+            //         data: { labels: [], datasets: [{ data: [], backgroundColor: ['#14b8a6', '#0d9488', '#0f766e', '#047857', '#065f46', '#064e3b', '#a7f3d0', '#6ee7b7', '#34d399'] }] },
+            //         options: {
+            //             responsive: true,
+            //             maintainAspectRatio: false,
+            //             plugins: {
+            //                 legend: { position: 'bottom', labels: { boxWidth: 15, padding: 15 } }
+            //             }
+            //         }
+            //     });
+            //
+            //     const costCtx = costChartCanvas.getContext('2d');
+            //     costChart = new Chart(costCtx, {
+            //         type: 'bar',
+            //         data: { labels: [], datasets: [{ label: 'Средняя годовая стоимость (€)', data: [], backgroundColor: '#14b8a6' }] },
+            //         options: {
+            //             indexAxis: 'y',
+            //             responsive: true,
+            //             maintainAspectRatio: false,
+            //             plugins: {
+            //                 legend: { display: false }
+            //             },
+            //             scales: {
+            //                 x: { beginAtZero: true }
+            //             }
+            //         }
+            //     });
+            //     
+            //     updateCharts(initialData);
+            // }
             
-            function updateCharts(data) {
-                const typeCounts = data.reduce((acc, item) => {
-                    acc[item.type] = (acc[item.type] || 0) + 1;
-                    return acc;
-                }, {});
-                
-                activityTypeChart.data.labels = Object.keys(typeCounts);
-                activityTypeChart.data.datasets[0].data = Object.values(typeCounts);
-                activityTypeChart.update();
-
-                const costData = data.filter(item => item.cost_annual !== null && item.cost_annual > 0);
-                const costByType = costData.reduce((acc, item) => {
-                    if (!acc[item.type]) {
-                        acc[item.type] = { total: 0, count: 0 };
-                    }
-                    acc[item.type].total += item.cost_annual;
-                    acc[item.type].count += 1;
-                    return acc;
-                }, {});
-
-                const avgCostLabels = Object.keys(costByType);
-                const avgCostValues = avgCostLabels.map(type => Math.round(costByType[type].total / costByType[type].count));
-
-                costChart.data.labels = avgCostLabels;
-                costChart.data.datasets[0].data = avgCostValues;
-                costChart.update();
-            }
+            // Removed updateCharts function as charts are no longer present.
+            // function updateCharts(data) {
+            //     const typeCounts = data.reduce((acc, item) => {
+            //         acc[item.type] = (acc[item.type] || 0) + 1;
+            //         return acc;
+            //     }, {});
+            //     
+            //     activityTypeChart.data.labels = Object.keys(typeCounts);
+            //     activityTypeChart.data.datasets[0].data = Object.values(typeCounts);
+            //     activityTypeChart.update();
+            //
+            //     const costData = data.filter(item => item.cost_annual !== null && item.cost_annual > 0);
+            //     const costByType = costData.reduce((acc, item) => {
+            //         if (!acc[item.type]) {
+            //             acc[item.type] = { total: 0, count: 0 };
+            //         }
+            //         acc[item.type].total += item.cost_annual;
+            //         acc[item.type].count += 1;
+            //         return acc;
+            //     }, {});
+            //
+            //     const avgCostLabels = Object.keys(costByType);
+            //     const avgCostValues = avgCostLabels.map(type => Math.round(costByType[type].total / costByType[type].count));
+            //
+            //     costChart.data.labels = avgCostLabels;
+            //     costChart.data.datasets[0].data = avgCostValues;
+            //     costChart.update();
+            // }
 
 
             searchInput.addEventListener('input', filterAndRender);
@@ -694,7 +670,7 @@
 
             setTimeout(() => {
                 populateFilters();
-                setupCharts();
+                // Removed setupCharts call.
                 filterAndRender();
                 loader.style.display = 'none';
                 resultsGrid.style.display = 'grid';
